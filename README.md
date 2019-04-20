@@ -18,20 +18,23 @@ Compilation for the target board:
 
 ```
 cd ports/stm32
-make BOARD=STM32F769DISC
+make BOARD=STM32F769DISC USER_C_MODULES=../../../usermod
 arm-none-eabi-objcopy -O binary build-STM32F769DISC/firmware.elf upy-f769disco.bin
 ```
 
 Then copy `upy-f769disco.bin` to the board. When you connect the board with the second USB cable it will mount a `PYBFLASH` volume where you can put your python code.
 
-## Planned changes to micro-python repo:
+## Changes to micro-python repo:
 
-- add sha1, ripemd160 and sha512 hash functions to hashlib
-- add secp256k1 elliptic curve library
-- integrate with lvgl library
+- [x] add sha1, ripemd160 and sha512 hash functions to hashlib
+- [ ] add hmac and pbkdf2
+- [ ] add secp256k1 elliptic curve library (ideally with `__mul__` and `__add__`)
+- [ ] integrate with littlevgl GUI library
+- [ ] integrate with jupyter notebook for easy development
 
-The MicroPython project
-=======================
+
+# Original docs of the MicroPython project
+
 <p align="center">
   <img src="https://raw.githubusercontent.com/micropython/micropython/master/logo/upython-with-micro.jpg" alt="MicroPython Logo"/>
 </p>
