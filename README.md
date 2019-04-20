@@ -18,7 +18,7 @@ Compilation for the target board:
 
 ```
 cd ports/stm32
-make BOARD=STM32F769DISC USER_C_MODULES=../../../usermod
+make BOARD=STM32F769DISC USER_C_MODULES=../../usermod
 arm-none-eabi-objcopy -O binary build-STM32F769DISC/firmware.elf upy-f769disco.bin
 ```
 
