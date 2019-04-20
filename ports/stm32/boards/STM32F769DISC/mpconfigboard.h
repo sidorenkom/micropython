@@ -6,6 +6,7 @@
 #define MICROPY_HW_MCU_NAME         "STM32F769"
 
 #define MODULE_EXAMPLE_ENABLED 		(1)
+#define MODULE_HASHLIB_ENABLED		(1)
 
 #define MICROPY_HW_HAS_SWITCH       (1)
 #define MICROPY_HW_HAS_FLASH        (1)
