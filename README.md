@@ -1,4 +1,34 @@
-[![Build Status](https://travis-ci.org/micropython/micropython.png?branch=master)](https://travis-ci.org/micropython/micropython) [![Coverage Status](https://coveralls.io/repos/micropython/micropython/badge.png?branch=master)](https://coveralls.io/r/micropython/micropython?branch=master)
+# Stepan's fork
+
+Micropython playground for DIY bitcoin hardware wallets.
+
+Currently focusing on [STM32F769DISCO](https://www.st.com/en/evaluation-tools/32f769idiscovery.html) developer board.
+
+## To run on STM32F769DISCO board:
+
+Preparation steps:
+
+```
+git clone https://github.com/stepansnigirev/micropython.git --recursive
+cd micropython
+make -C mpy-cross
+```
+
+Compilation for the target board:
+
+```
+cd ports/stm32
+make BOARD=STM32F769DISC
+arm-none-eabi-objcopy -O binary build-STM32F769DISC/firmware.elf upy-f769disco.bin
+```
+
+Then copy `upy-f769disco.bin` to the board. When you connect the board with the second USB cable it will mount a `PYBFLASH` volume where you can put your python code.
+
+## Planned changes to micro-python repo:
+
+- add sha1, ripemd160 and sha512 hash functions to hashlib
+- add secp256k1 elliptic curve library
+- integrate with lvgl library
 
 The MicroPython project
 =======================
