@@ -26,12 +26,16 @@ Then copy `upy-f769disco.bin` to the board. When you connect the board with the 
 
 ## Changes to micro-python repo:
 
-- [x] add sha1, ripemd160 and sha512 hash functions to hashlib
-- [ ] add hmac and pbkdf2
+- [x] add sha1, ripemd160 and sha512 hash functions to `hashlib` module
+- [x] add `hmac` module 
+- [ ] add `pbkdf2` module
 - [ ] add secp256k1 elliptic curve library (ideally with `__mul__` and `__add__`)
 - [ ] integrate with littlevgl GUI library
 - [ ] integrate with jupyter notebook for easy development
 
+## Structure
+
+Extra C modules with upy-bindings are in the `usermod` folder. Python modules are in `ports/stm32/modules` folder.
 
 # Original docs of the MicroPython project
 

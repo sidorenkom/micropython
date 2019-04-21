@@ -26,6 +26,14 @@ STATIC mp_obj_t hashlib_sha1_make_new(const mp_obj_type_t *type, size_t n_args, 
     return MP_OBJ_FROM_PTR(o);
 }
 
+STATIC mp_obj_t hashlib_sha1_copy(mp_obj_t self_in) {
+    mp_obj_hash_t *o = m_new_obj_var(mp_obj_hash_t, char, sizeof(SHA1_CTX));
+    mp_obj_hash_t *self = MP_OBJ_TO_PTR(self_in);
+    o->base.type = self->base.type;
+    memcpy(o->state, self->state, sizeof(SHA1_CTX));
+    return MP_OBJ_FROM_PTR(o);
+}
+
 STATIC mp_obj_t hashlib_sha1_update(mp_obj_t self_in, mp_obj_t arg) {
     mp_obj_hash_t *self = MP_OBJ_TO_PTR(self_in);
     mp_buffer_info_t bufinfo;
@@ -44,10 +52,14 @@ STATIC mp_obj_t hashlib_sha1_digest(mp_obj_t self_in) {
 
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(hashlib_sha1_update_obj, hashlib_sha1_update);
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hashlib_sha1_digest_obj, hashlib_sha1_digest);
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(hashlib_sha1_copy_obj, hashlib_sha1_copy);
 
 STATIC const mp_rom_map_elem_t hashlib_sha1_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_update), MP_ROM_PTR(&hashlib_sha1_update_obj) },
     { MP_ROM_QSTR(MP_QSTR_digest), MP_ROM_PTR(&hashlib_sha1_digest_obj) },
+    { MP_ROM_QSTR(MP_QSTR_digest_size), MP_ROM_INT(SHA1_DIGEST_LENGTH) },
+    { MP_ROM_QSTR(MP_QSTR_block_size), MP_ROM_INT(SHA1_BLOCK_LENGTH) },
+    { MP_ROM_QSTR(MP_QSTR_copy), MP_ROM_PTR(&hashlib_sha1_copy_obj) },
 };
 
 STATIC MP_DEFINE_CONST_DICT(hashlib_sha1_locals_dict, hashlib_sha1_locals_dict_table);
@@ -74,6 +86,14 @@ STATIC mp_obj_t hashlib_sha256_make_new(const mp_obj_type_t *type, size_t n_args
     return MP_OBJ_FROM_PTR(o);
 }
 
+STATIC mp_obj_t hashlib_sha256_copy(mp_obj_t self_in) {
+    mp_obj_hash_t *o = m_new_obj_var(mp_obj_hash_t, char, sizeof(SHA256_CTX));
+    mp_obj_hash_t *self = MP_OBJ_TO_PTR(self_in);
+    o->base.type = self->base.type;
+    memcpy(o->state, self->state, sizeof(SHA256_CTX));
+    return MP_OBJ_FROM_PTR(o);
+}
+
 STATIC mp_obj_t hashlib_sha256_update(mp_obj_t self_in, mp_obj_t arg) {
     mp_obj_hash_t *self = MP_OBJ_TO_PTR(self_in);
     mp_buffer_info_t bufinfo;
@@ -92,10 +112,14 @@ STATIC mp_obj_t hashlib_sha256_digest(mp_obj_t self_in) {
 
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(hashlib_sha256_update_obj, hashlib_sha256_update);
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hashlib_sha256_digest_obj, hashlib_sha256_digest);
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(hashlib_sha256_copy_obj, hashlib_sha256_copy);
 
 STATIC const mp_rom_map_elem_t hashlib_sha256_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_update), MP_ROM_PTR(&hashlib_sha256_update_obj) },
     { MP_ROM_QSTR(MP_QSTR_digest), MP_ROM_PTR(&hashlib_sha256_digest_obj) },
+    { MP_ROM_QSTR(MP_QSTR_digest_size), MP_ROM_INT(SHA256_DIGEST_LENGTH) },
+    { MP_ROM_QSTR(MP_QSTR_block_size), MP_ROM_INT(SHA256_BLOCK_LENGTH) },
+    { MP_ROM_QSTR(MP_QSTR_copy), MP_ROM_PTR(&hashlib_sha256_copy_obj) },
 };
 
 STATIC MP_DEFINE_CONST_DICT(hashlib_sha256_locals_dict, hashlib_sha256_locals_dict_table);
@@ -122,6 +146,14 @@ STATIC mp_obj_t hashlib_sha512_make_new(const mp_obj_type_t *type, size_t n_args
     return MP_OBJ_FROM_PTR(o);
 }
 
+STATIC mp_obj_t hashlib_sha512_copy(mp_obj_t self_in) {
+    mp_obj_hash_t *o = m_new_obj_var(mp_obj_hash_t, char, sizeof(SHA512_CTX));
+    mp_obj_hash_t *self = MP_OBJ_TO_PTR(self_in);
+    o->base.type = self->base.type;
+    memcpy(o->state, self->state, sizeof(SHA512_CTX));
+    return MP_OBJ_FROM_PTR(o);
+}
+
 STATIC mp_obj_t hashlib_sha512_update(mp_obj_t self_in, mp_obj_t arg) {
     mp_obj_hash_t *self = MP_OBJ_TO_PTR(self_in);
     mp_buffer_info_t bufinfo;
@@ -140,10 +172,14 @@ STATIC mp_obj_t hashlib_sha512_digest(mp_obj_t self_in) {
 
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(hashlib_sha512_update_obj, hashlib_sha512_update);
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hashlib_sha512_digest_obj, hashlib_sha512_digest);
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(hashlib_sha512_copy_obj, hashlib_sha512_copy);
 
 STATIC const mp_rom_map_elem_t hashlib_sha512_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_update), MP_ROM_PTR(&hashlib_sha512_update_obj) },
     { MP_ROM_QSTR(MP_QSTR_digest), MP_ROM_PTR(&hashlib_sha512_digest_obj) },
+    { MP_ROM_QSTR(MP_QSTR_digest_size), MP_ROM_INT(SHA512_DIGEST_LENGTH) },
+    { MP_ROM_QSTR(MP_QSTR_block_size), MP_ROM_INT(SHA512_BLOCK_LENGTH) },
+    { MP_ROM_QSTR(MP_QSTR_copy), MP_ROM_PTR(&hashlib_sha512_copy_obj) },
 };
 
 STATIC MP_DEFINE_CONST_DICT(hashlib_sha512_locals_dict, hashlib_sha512_locals_dict_table);
@@ -170,6 +206,14 @@ STATIC mp_obj_t hashlib_ripemd160_make_new(const mp_obj_type_t *type, size_t n_a
     return MP_OBJ_FROM_PTR(o);
 }
 
+STATIC mp_obj_t hashlib_ripemd160_copy(mp_obj_t self_in) {
+    mp_obj_hash_t *o = m_new_obj_var(mp_obj_hash_t, char, sizeof(RIPEMD160_CTX));
+    mp_obj_hash_t *self = MP_OBJ_TO_PTR(self_in);
+    o->base.type = self->base.type;
+    memcpy(o->state, self->state, sizeof(RIPEMD160_CTX));
+    return MP_OBJ_FROM_PTR(o);
+}
+
 STATIC mp_obj_t hashlib_ripemd160_update(mp_obj_t self_in, mp_obj_t arg) {
     mp_obj_hash_t *self = MP_OBJ_TO_PTR(self_in);
     mp_buffer_info_t bufinfo;
@@ -188,10 +232,14 @@ STATIC mp_obj_t hashlib_ripemd160_digest(mp_obj_t self_in) {
 
 STATIC MP_DEFINE_CONST_FUN_OBJ_2(hashlib_ripemd160_update_obj, hashlib_ripemd160_update);
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(hashlib_ripemd160_digest_obj, hashlib_ripemd160_digest);
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(hashlib_ripemd160_copy_obj, hashlib_ripemd160_copy);
 
 STATIC const mp_rom_map_elem_t hashlib_ripemd160_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_update), MP_ROM_PTR(&hashlib_ripemd160_update_obj) },
     { MP_ROM_QSTR(MP_QSTR_digest), MP_ROM_PTR(&hashlib_ripemd160_digest_obj) },
+    { MP_ROM_QSTR(MP_QSTR_digest_size), MP_ROM_INT(RIPEMD160_DIGEST_LENGTH) },
+    { MP_ROM_QSTR(MP_QSTR_block_size), MP_ROM_INT(RIPEMD160_BLOCK_LENGTH) },
+    { MP_ROM_QSTR(MP_QSTR_copy), MP_ROM_PTR(&hashlib_ripemd160_copy_obj) },
 };
 
 STATIC MP_DEFINE_CONST_DICT(hashlib_ripemd160_locals_dict, hashlib_ripemd160_locals_dict_table);
