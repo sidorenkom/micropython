@@ -1,6 +1,6 @@
 # Stepan's fork
 
-Micropython playground for DIY bitcoin hardware wallets.
+Micropython build for DIY bitcoin hardware wallets.
 
 Currently focusing on [STM32F769DISCO](https://www.st.com/en/evaluation-tools/32f769idiscovery.html) developer board.
 
@@ -26,12 +26,12 @@ Then copy `upy-f769disco.bin` to the board. When you connect the board with the 
 
 ## Changes to micro-python repo:
 
-- [x] add sha1, ripemd160 and sha512 hash functions to `hashlib` module
-- [x] add `hmac` module 
-- [ ] add `pbkdf2` module
-- [ ] add secp256k1 elliptic curve library (ideally with `__mul__` and `__add__`)
-- [ ] integrate with littlevgl GUI library
-- [ ] integrate with jupyter notebook for easy development
+- [x] `hashlib` module with `sha1`, `ripemd160`, `sha256` and `sha512` functions
+- [x] `hmac` module 
+- [x] `pbkdf2` module
+- [ ] `secp256k1` elliptic curve library (ideally with `__mul__` and `__add__`)
+- [ ] integrated with littlevgl GUI library
+- [ ] optimize `hmac`, `pbkdf2` with C modules
 
 ## Structure
 
