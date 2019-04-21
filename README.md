@@ -1,8 +1,19 @@
-# Stepan's fork
-
-Micropython build for DIY bitcoin hardware wallets.
+# MicroPython tuned for DIY Bitcoin hardware wallets
 
 Currently focusing on [STM32F769DISCO](https://www.st.com/en/evaluation-tools/32f769idiscovery.html) developer board.
+
+## Changes to micro-python repo:
+
+- [x] `hashlib` module with `sha1`, `ripemd160`, `sha256` and `sha512` functions (C module)
+- [x] `hmac` module (python)
+- [x] `pbkdf2` module (python)
+- [ ] `secp256k1` elliptic curve library (ideally with `__mul__` and `__add__`)
+- [ ] integrated with littlevgl GUI library
+- [ ] optimize `hmac`, `pbkdf2` with C modules
+
+## Structure
+
+Extra C modules with micropython bindings are in the `usermod` folder. Python modules are in `ports/stm32/modules` folder.
 
 ## To run on STM32F769DISCO board:
 
@@ -23,19 +34,6 @@ arm-none-eabi-objcopy -O binary build-STM32F769DISC/firmware.elf upy-f769disco.b
 ```
 
 Then copy `upy-f769disco.bin` to the board. When you connect the board with the second USB cable it will mount a `PYBFLASH` volume where you can put your python code.
-
-## Changes to micro-python repo:
-
-- [x] `hashlib` module with `sha1`, `ripemd160`, `sha256` and `sha512` functions
-- [x] `hmac` module 
-- [x] `pbkdf2` module
-- [ ] `secp256k1` elliptic curve library (ideally with `__mul__` and `__add__`)
-- [ ] integrated with littlevgl GUI library
-- [ ] optimize `hmac`, `pbkdf2` with C modules
-
-## Structure
-
-Extra C modules with upy-bindings are in the `usermod` folder. Python modules are in `ports/stm32/modules` folder.
 
 # Original docs of the MicroPython project
 
