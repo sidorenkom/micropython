@@ -7,9 +7,24 @@ Currently focusing on [STM32F769DISCO](https://www.st.com/en/evaluation-tools/32
 - [x] `hashlib` module with `sha1`, `ripemd160`, `sha256` and `sha512` functions (C module)
 - [x] `hmac` module (python)
 - [x] `pbkdf2` module (python)
+- [x] `_ecc` elliptic curve ariphmetics (C-module)
 - [ ] `secp256k1` elliptic curve library (ideally with `__mul__` and `__add__`)
 - [ ] integrated with littlevgl GUI library
 - [ ] optimize `hmac`, `pbkdf2` with C modules
+- [ ] implement dynamic SD card (mount / unmount)
+- [ ] hardware crypto accelerators support
+
+## `_ecc` module
+
+Minimal C module that provides a point ariphmetics functions. Can be used for efficient point addition and multiplication by a scalar.
+
+Available functions:
+
+- `get_public_key33(privkey)` - takes a 32-byte array with private key in big endian and returns 33-byte array with compressed sec of the public key.
+- `get_public_key65(privkey)` - takes a 32-byte array with private key in big endian and returns 65-byte array with uncompressed sec of the public key.
+- `point_add(p1, p2)` - takes byte arrays with sec of two points and returns a 65-byte array with sec of the sum.
+- `point_multiply(scalar, point)` - takes a 32-byte array with a scalar and byte array with sec of the point and returns 65-byte array with sec of the product
+- `validate_pubkey(point)` - takes a byte array with sec of the point and checks if it is on the curve or not.
 
 ## Structure
 
