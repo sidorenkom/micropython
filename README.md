@@ -2,17 +2,18 @@
 
 Currently focusing on [STM32F769DISCO](https://www.st.com/en/evaluation-tools/32f769idiscovery.html) developer board.
 
-## Changes to micro-python repo:
+## Roadmap:
 
 - [x] `hashlib` module with `sha1`, `ripemd160`, `sha256` and `sha512` functions (C module)
 - [x] `hmac` module (python)
 - [x] `pbkdf2` module (python)
 - [x] `_ecc` elliptic curve arithmetic (C module)
-- [ ] integrated with littlevgl GUI library
-- [ ] `ecc` elliptic curve library (ideally with `__mul__` and `__add__`)
-- [ ] optimize `hmac`, `pbkdf2` with C modules
+- [x] `ecc` elliptic curve library (ideally with `__mul__` and `__add__`)
+- [ ] integrate with littlevgl GUI library
+- [ ] split into different repos & do git submodules
 - [ ] dynamic SD card (mount / unmount)
 - [ ] hardware crypto accelerators support
+- [ ] optimize `hmac`, `pbkdf2` with C modules
 
 ## `bitcoin` library
 
