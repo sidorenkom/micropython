@@ -7,14 +7,29 @@ Currently focusing on [STM32F769DISCO](https://www.st.com/en/evaluation-tools/32
 - [x] `hashlib` module with `sha1`, `ripemd160`, `sha256` and `sha512` functions (C module)
 - [x] `hmac` module (python)
 - [x] `pbkdf2` module (python)
-- [x] `_ecc` elliptic curve ariphmetics (C-module)
-- [ ] `secp256k1` elliptic curve library (ideally with `__mul__` and `__add__`)
+- [x] `_ecc` elliptic curve arithmetic (C module)
 - [ ] integrated with littlevgl GUI library
+- [ ] `ecc` elliptic curve library (ideally with `__mul__` and `__add__`)
 - [ ] optimize `hmac`, `pbkdf2` with C modules
-- [ ] implement dynamic SD card (mount / unmount)
+- [ ] dynamic SD card (mount / unmount)
 - [ ] hardware crypto accelerators support
 
-## `_ecc` module
+## `bitcoin` library
+
+Pure micropython bitcoin library adapted from Jimmy's [pybtcfork](https://github.com/jimmysong/pybtcfork) library. For elliptic curves it uses `_ecc` module (see below).
+
+Currently ported `PrivateKey` and `PublicKey` classes. These classes implement `__add__`, `__mul__` and `__truediv__` methods, so normal elliptic curve arithmetics works with them. This means you can do scalar addition, multiplication and division as well as point addition and multiplication by a scalar.
+
+Simple example:
+
+```py
+from bitcoin import *
+pk = PrivateKey.parse("L4je5ce4nCaAfXD96PQzgcf7dFYDDghwQqULwLWyxjdo9KBxLFGK")
+pub = pk.public_key
+print(pub.address())
+```
+
+## `_ecc` C module
 
 Minimal C module that provides a point ariphmetics functions. Can be used for efficient point addition and multiplication by a scalar.
 

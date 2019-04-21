@@ -103,6 +103,23 @@ STATIC mp_obj_t _ecc_validate_pubkey(mp_obj_t point){
 
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(_ecc_validate_pubkey_obj, _ecc_validate_pubkey);
 
+/****************************** uncompress_pubkey ******************************/
+
+STATIC mp_obj_t _ecc_uncompress_pubkey(mp_obj_t point){
+    mp_buffer_info_t bufinfo;
+    mp_get_buffer_raise(point, &bufinfo, MP_BUFFER_READ);
+    curve_point p;
+    ecdsa_read_pubkey(&secp256k1, bufinfo.buf, &p);
+    vstr_t vstr;
+    vstr_init_len(&vstr, 65);
+    ((byte*)vstr.buf)[0] = 0x04;
+    bn_write_be(&p.x, (byte*)vstr.buf+1);
+    bn_write_be(&p.y, (byte*)vstr.buf+33);
+    return mp_obj_new_str_from_vstr(&mp_type_bytes, &vstr);
+}
+
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(_ecc_uncompress_pubkey_obj, _ecc_uncompress_pubkey);
+
 /****************************** MODULE ******************************/
 
 STATIC const mp_rom_map_elem_t _ecc_module_globals_table[] = {
@@ -112,6 +129,7 @@ STATIC const mp_rom_map_elem_t _ecc_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR_point_add), MP_ROM_PTR(&_ecc_point_add_obj) },
     { MP_ROM_QSTR(MP_QSTR_point_multiply), MP_ROM_PTR(&_ecc_point_multiply_obj) },
     { MP_ROM_QSTR(MP_QSTR_validate_pubkey), MP_ROM_PTR(&_ecc_validate_pubkey_obj) },
+    { MP_ROM_QSTR(MP_QSTR_uncompress_pubkey), MP_ROM_PTR(&_ecc_uncompress_pubkey_obj) },
 };
 STATIC MP_DEFINE_CONST_DICT(_ecc_module_globals, _ecc_module_globals_table);
 
