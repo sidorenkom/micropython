@@ -104,7 +104,7 @@ class PrivateKey(FieldElement):
         if z > N:
             z -= N
         z_bytes = z.to_bytes(32, 'big')
-        secret_bytes = self.secret.to_bytes(32, 'big')
+        secret_bytes = self.num.to_bytes(32, 'big')
         s256 = hashlib.sha256
         k = hmac.new(k, v + b'\x00' + secret_bytes + z_bytes, s256).digest()
         v = hmac.new(k, v, s256).digest()
@@ -126,7 +126,7 @@ class PrivateKey(FieldElement):
         # remember 1/k = pow(k, N-2, N)
         k_inv = pow(k, N-2, N)
         # s = (z+r*secret) / k
-        s = (z + r*self.secret) * k_inv % N
+        s = (z + r*self.num) * k_inv % N
         if s > N/2:
             s = N - s
         # return an instance of Signature:
@@ -141,7 +141,7 @@ class PrivateKey(FieldElement):
                 prefix = b'\x80'
         # convert the secret from integer to a 32-bytes in big endian using
         # num.to_bytes(32, 'big')
-        secret_bytes = self.secret.to_bytes(32, 'big')
+        secret_bytes = self.num.to_bytes(32, 'big')
         # append b'\x01' if compressed
         if self.compressed:
             suffix = b'\x01'
@@ -156,10 +156,10 @@ class PrivateKey(FieldElement):
                 prefix = b'\x6f'
             else:
                 prefix = b'\x00'
-        return self.point.address(compressed=self.compressed, prefix=prefix)
+        return self.public_key.address(compressed=self.compressed, prefix=prefix)
 
     def segwit_redeem_script(self):
-        return self.point.segwit_redeem_script()
+        return self.public_key.segwit_redeem_script()
 
     def segwit_address(self, prefix=None):
         if prefix is None:
@@ -167,7 +167,7 @@ class PrivateKey(FieldElement):
                 prefix = b'\xc4'
             else:
                 prefix = b'\x05'
-        return self.point.segwit_address(prefix=prefix)
+        return self.public_key.segwit_address(prefix=prefix)
 
     @classmethod
     def parse(cls, wif):

@@ -9,11 +9,19 @@ Currently focusing on [STM32F769DISCO](https://www.st.com/en/evaluation-tools/32
 - [x] `pbkdf2` module (python)
 - [x] `_ecc` elliptic curve arithmetic (C module)
 - [x] `ecc` elliptic curve library (ideally with `__mul__` and `__add__`)
-- [ ] integrate with littlevgl GUI library
+- [x] minimal `display` library
+- [ ] littlevgl GUI library
 - [ ] split into different repos & do git submodules
 - [ ] dynamic SD card (mount / unmount)
 - [ ] hardware crypto accelerators support
 - [ ] optimize `hmac`, `pbkdf2` with C modules
+
+## `display` library
+
+Works on ly on STM32F769DISCO right now, and only a few functions are currently supported:
+- `init()` - inits the screen and clears it. Should be run first.
+- `print(msg, x, y)` - print `msg` string at coordinates `(x,y)`. Doesn't support `\n`
+- `clear()` - clears the screen
 
 ## `bitcoin` library
 
