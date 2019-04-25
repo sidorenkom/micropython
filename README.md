@@ -74,7 +74,7 @@ arm-none-eabi-objcopy -O binary build-STM32F769DISC/firmware.elf upy-f769disco.b
 
 Then copy `upy-f769disco.bin` to the board. When you connect the board with the second USB cable it will mount a `PYBFLASH` volume where you can put your python code.
 
-# Original docs of the MicroPython project
+# The MicroPython project
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/micropython/micropython/master/logo/upython-with-micro.jpg" alt="MicroPython Logo"/>
