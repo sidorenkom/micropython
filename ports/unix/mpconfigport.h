@@ -25,6 +25,8 @@
  */
 
 // options to control how MicroPython is built
+#define MODULE_HASHLIB_ENABLED      (1)
+#define MODULE_SECP256K1_ENABLED    (1)
 
 #define MICROPY_ALLOC_PATH_MAX      (PATH_MAX)
 #define MICROPY_PERSISTENT_CODE_LOAD (1)
