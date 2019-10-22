@@ -9,6 +9,8 @@
 #define MICROPY_HW_ENABLE_USB       (1)
 #define MICROPY_HW_ENABLE_SDCARD    (0)
 
+#define MODULE_SECP256K1_ENABLED    (1)
+
 // HSE is 8MHz
 #define MICROPY_HW_CLK_PLLM (8)
 #define MICROPY_HW_CLK_PLLN (336)
