@@ -24,6 +24,10 @@
  * THE SOFTWARE.
  */
 
+// bitcoin
+#define MODULE_SECP256K1_ENABLED    (1)
+#define MODULE_HASHLIB_ENABLED      (1)
+
 // options to control how MicroPython is built
 
 #define MICROPY_ALLOC_PATH_MAX      (PATH_MAX)
