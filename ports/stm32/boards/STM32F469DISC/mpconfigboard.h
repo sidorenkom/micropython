@@ -11,6 +11,7 @@
 
 #define MODULE_SECP256K1_ENABLED    (1)
 #define MODULE_HASHLIB_ENABLED      (1)
+#define MODULE_DISPLAY_ENABLED		(1)
 
 // HSE is 8MHz
 #define MICROPY_HW_CLK_PLLM (8)
