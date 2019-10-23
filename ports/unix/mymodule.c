@@ -7,11 +7,11 @@
 /**
  * Our first function
  */
-STATIC mp_obj_t mymodule_hello(void) {
-    printf("Hello world!\n");
+STATIC mp_obj_t mymodule_hello(mp_obj_t what) {
+    printf("Hello %s!\n", mp_obj_str_get_str(what));
     return mp_const_none;
 }
-STATIC MP_DEFINE_CONST_FUN_OBJ_0(mymodule_hello_obj, mymodule_hello);
+STATIC MP_DEFINE_CONST_FUN_OBJ_1(mymodule_hello_obj, mymodule_hello);
 
 /**
  * Register module attributes
