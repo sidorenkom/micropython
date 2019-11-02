@@ -11,7 +11,8 @@
 
 #define MODULE_SECP256K1_ENABLED    (1)
 #define MODULE_HASHLIB_ENABLED      (1)
-#define MODULE_DISPLAY_ENABLED		(1)
+#define MODULE_DISPLAY_ENABLED      (1)
+// #define MODULE_LVGL_ENABLED         (1)
 
 // HSE is 8MHz
 #define MICROPY_HW_CLK_PLLM (8)
@@ -52,8 +53,8 @@
 #define MICROPY_HW_LED2             (pin_D4) // green 
 #define MICROPY_HW_LED3             (pin_D5) // green
 #define MICROPY_HW_LED4             (pin_K3) // green
-#define MICROPY_HW_LED_ON(pin)      (mp_hal_pin_high(pin))
-#define MICROPY_HW_LED_OFF(pin)     (mp_hal_pin_low(pin))
+#define MICROPY_HW_LED_ON(pin)      (mp_hal_pin_low(pin))
+#define MICROPY_HW_LED_OFF(pin)     (mp_hal_pin_high(pin))
 
 // SD card detect switch
 #define MICROPY_HW_SDMMC2_CK                (pin_C12)
