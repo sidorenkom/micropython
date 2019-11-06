@@ -12,6 +12,7 @@
 #define MODULE_SECP256K1_ENABLED    (1)
 #define MODULE_HASHLIB_ENABLED      (1)
 #define MODULE_DISPLAY_ENABLED      (1)
+#define MODULE_QRCODE_ENABLED       (1)
 // #define MICROPY_PY_THREAD           (1)
 
 // HSE is 8MHz

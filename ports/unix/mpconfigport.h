@@ -27,8 +27,7 @@
 // bitcoin
 #define MODULE_SECP256K1_ENABLED    (1)
 #define MODULE_HASHLIB_ENABLED      (1)
-#define MODULE_HELLO_ENABLED        (1)
-#define MODULE_WALLY_ENABLED        (1)
+#define MODULE_QRCODE_ENABLED       (1)
 
 // options to control how MicroPython is built
 
