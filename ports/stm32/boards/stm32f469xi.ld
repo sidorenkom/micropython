@@ -1,16 +1,16 @@
 /*
-    GNU linker script for STM32F439
+    GNU linker script for STM32F469xI (2Mbyte)
 */
 
 /* Specify the memory areas */
 MEMORY
 {
-    FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 1024K
-    FLASH_ISR (rx)  : ORIGIN = 0x08000000, LENGTH = 32K     /* sector 0, 32K */
-    FLASH_FS (r)    : ORIGIN = 0x08008000, LENGTH = 96K     /* sectors 1, 2, 3 (32K each) */
-    FLASH_TEXT (rx) : ORIGIN = 0x08020000, LENGTH = 896K    /* sectors 4-7 1*128Kib 3*256KiB = 896K */
-    DTCM (xrw)      : ORIGIN = 0x20000000, LENGTH = 64K     /* Used for storage cache */
-    RAM (xrw)       : ORIGIN = 0x20010000, LENGTH = 256K    /* SRAM1 = 240K, SRAM2 = 16K */
+    FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 2048K   /* Entire flash */
+    FLASH_ISR (rx)  : ORIGIN = 0x08000000, LENGTH = 32K     /* Sectors 0, 1 */
+    FLASH_FS (r)    : ORIGIN = 0x08008000, LENGTH = 96K     /* Sectors 2, 3, 4 */
+    FLASH_TEXT (rx) : ORIGIN = 0x08020000, LENGTH = 1920K   /* Sectors 5 - 23 */
+    DTCM (rw)       : ORIGIN = 0x10000000, LENGTH = 64K     /* CCM RAM used for storage cache */
+    RAM (xrw)       : ORIGIN = 0x20000000, LENGTH = 320K    /* SRAM1, SRAM2, SRAM3 */
 }
 
 /* produce a link error if there is not this amount of RAM for these sections */

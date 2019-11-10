@@ -1,13 +1,53 @@
 // This board is configured to communicate over USB port, not ST-Link
+#define MICROPY_BOARD_EARLY_INIT    STM32F469DISC_board_early_init
+void STM32F469DISC_board_early_init(void);
+
+// TODO: Finish QSPI interface for external flash memory
+#define MICROPY_F469DISC_USE_SOFTSPI // Temporary
+
 #define MICROPY_HW_BOARD_NAME       "F469DISC"
 #define MICROPY_HW_MCU_NAME         "STM32F469"
 
+#define MICROPY_HW_ENABLE_INTERNAL_FLASH_STORAGE (0)
 #define MICROPY_HW_HAS_SWITCH       (1)
 #define MICROPY_HW_HAS_FLASH        (1)
 #define MICROPY_HW_ENABLE_RNG       (1)
 #define MICROPY_HW_ENABLE_RTC       (1)
 #define MICROPY_HW_ENABLE_USB       (1)
 #define MICROPY_HW_ENABLE_SDCARD    (1)
+
+// use external SPI flash for storage
+#define MICROPY_HW_SPIFLASH_SIZE_BITS (128 * 1024 * 1024)
+
+#ifdef MICROPY_F469DISC_USE_SOFTSPI
+
+#define MICROPY_HW_SPIFLASH_CS      (pin_B6)
+#define MICROPY_HW_SPIFLASH_SCK     (pin_F10)
+#define MICROPY_HW_SPIFLASH_MOSI    (pin_F8)
+#define MICROPY_HW_SPIFLASH_MISO    (pin_F9)
+
+#else // MICROPY_F469DISC_USE_SOFTSPI
+
+#define MICROPY_HW_QSPIFLASH_SIZE_BITS_LOG2 (24)
+#define MICROPY_HW_QSPIFLASH_CS     (pyb_pin_QSPI_CS)
+#define MICROPY_HW_QSPIFLASH_SCK    (pyb_pin_QSPI_CLK)
+#define MICROPY_HW_QSPIFLASH_IO0    (pyb_pin_QSPI_D0)
+#define MICROPY_HW_QSPIFLASH_IO1    (pyb_pin_QSPI_D1)
+#define MICROPY_HW_QSPIFLASH_IO2    (pyb_pin_QSPI_D2)
+#define MICROPY_HW_QSPIFLASH_IO3    (pyb_pin_QSPI_D3)
+
+#endif // MICROPY_F469DISC_USE_SOFTSPI
+
+// block device config for SPI flash
+extern const struct _mp_spiflash_config_t spiflash_config;
+extern struct _spi_bdev_t spi_bdev;
+#define MICROPY_HW_BDEV_IOCTL(op, arg) ( \
+    (op) == BDEV_IOCTL_NUM_BLOCKS ? (MICROPY_HW_SPIFLASH_SIZE_BITS / 8 / FLASH_BLOCK_SIZE) : \
+    (op) == BDEV_IOCTL_INIT ? spi_bdev_ioctl(&spi_bdev, (op), (uint32_t)&spiflash_config) : \
+    spi_bdev_ioctl(&spi_bdev, (op), (arg)) \
+)
+#define MICROPY_HW_BDEV_READBLOCKS(dest, bl, n) spi_bdev_readblocks(&spi_bdev, (dest), (bl), (n))
+#define MICROPY_HW_BDEV_WRITEBLOCKS(src, bl, n) spi_bdev_writeblocks(&spi_bdev, (src), (bl), (n))
 
 #define MODULE_SECP256K1_ENABLED    (1)
 #define MODULE_HASHLIB_ENABLED      (1)
@@ -74,12 +114,3 @@
 #define MICROPY_HW_USB_FS (1)
 #define MICROPY_HW_USB_VBUS_DETECT_PIN (pin_A9)
 #define MICROPY_HW_USB_OTG_ID_PIN      (pin_A10)
-
-// 512MBit external QSPI flash, to be memory mapped
-// #define MICROPY_HW_QSPIFLASH_SIZE_BITS_LOG2 (29) // <- check
-// #define MICROPY_HW_QSPIFLASH_CS     (pin_B6)
-// #define MICROPY_HW_QSPIFLASH_SCK    (pin_F10)
-// #define MICROPY_HW_QSPIFLASH_IO0    (pin_D11)
-// #define MICROPY_HW_QSPIFLASH_IO1    (pin_D12)
-// #define MICROPY_HW_QSPIFLASH_IO2    (pin_F7)
-// #define MICROPY_HW_QSPIFLASH_IO3    (pin_D13)
