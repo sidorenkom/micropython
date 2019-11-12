@@ -52,6 +52,10 @@
 #define MICROPY_HW_QSPI_CS_HIGH_CYCLES  2  // nCS stays high for 2 cycles
 #endif
 
+#ifndef MICROPY_HW_QSPI_C4READ_DUMMY_CYCLES
+#define MICROPY_HW_QSPI_C4READ_DUMMY_CYCLES  4  // Dummy cycles for quad I/O read operation
+#endif
+
 static inline void qspi_mpu_disable_all(void) {
     // Configure MPU to disable access to entire QSPI region, to prevent CPU
     // speculative execution from accessing this region and modifying QSPI registers.
@@ -294,7 +298,7 @@ STATIC void qspi_read_cmd_qaddr_qdata(void *self_in, uint8_t cmd, uint32_t addr,
         | 0 << QUADSPI_CCR_SIOO_Pos // send instruction every transaction
         | 1 << QUADSPI_CCR_FMODE_Pos // indirect read mode
         | 3 << QUADSPI_CCR_DMODE_Pos // data on 4 lines
-        | 4 << QUADSPI_CCR_DCYC_Pos // 4 dummy cycles
+        | MICROPY_HW_QSPI_C4READ_DUMMY_CYCLES << QUADSPI_CCR_DCYC_Pos // dummy cycles
         | 0 << QUADSPI_CCR_ABSIZE_Pos // 8-bit alternate byte
         | 3 << QUADSPI_CCR_ABMODE_Pos // alternate byte on 4 lines
         | 2 << QUADSPI_CCR_ADSIZE_Pos // 24-bit address size

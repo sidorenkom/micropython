@@ -2,8 +2,8 @@
 #define MICROPY_BOARD_EARLY_INIT    STM32F469DISC_board_early_init
 void STM32F469DISC_board_early_init(void);
 
-// TODO: Finish QSPI interface for external flash memory
-#define MICROPY_F469DISC_USE_SOFTSPI // Temporary
+// TODO: Software SPI not needed anymore, remove after testing
+//#define MICROPY_F469DISC_USE_SOFTSPI // Temporary, enables software 1-bit SPI
 
 #define MICROPY_HW_BOARD_NAME       "F469DISC"
 #define MICROPY_HW_MCU_NAME         "STM32F469"
@@ -28,7 +28,9 @@ void STM32F469DISC_board_early_init(void);
 
 #else // MICROPY_F469DISC_USE_SOFTSPI
 
-#define MICROPY_HW_QSPIFLASH_SIZE_BITS_LOG2 (24)
+#define MICROPY_HW_QSPI_PRESCALER           (3)
+#define MICROPY_HW_QSPI_C4READ_DUMMY_CYCLES (8)
+#define MICROPY_HW_QSPIFLASH_SIZE_BITS_LOG2 (27)
 #define MICROPY_HW_QSPIFLASH_CS     (pyb_pin_QSPI_CS)
 #define MICROPY_HW_QSPIFLASH_SCK    (pyb_pin_QSPI_CLK)
 #define MICROPY_HW_QSPIFLASH_IO0    (pyb_pin_QSPI_D0)
