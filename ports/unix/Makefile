@@ -79,7 +79,6 @@ else
 LDFLAGS_ARCH = -Wl,-Map=$@.map,--cref -Wl,--gc-sections
 endif
 LDFLAGS = $(LDFLAGS_MOD) $(LDFLAGS_ARCH) -lm $(LDFLAGS_EXTRA)
-
 # Flags to link with pthread library
 LIBPTHREAD = -lpthread
 
