@@ -87,7 +87,32 @@
 STATIC pyb_thread_t pyb_thread_main;
 #endif
 
+// Number of flash partitions to mount
+#ifdef MICROPY_HW_BDEV2_IOCTL
+#define FLASH_FS_N_PARTS            (2) 
+#else
+#define FLASH_FS_N_PARTS            (1)
+#endif
+
+// Properties of flash partitions
+typedef struct {
+    char label[10+1];
+    char mnt_point[10+1];
+} flash_fs_prop_t;
+
+#if MICROPY_HW_ENABLE_STORAGE
+STATIC fs_user_mount_t *fs_user_mount_flash = NULL;
+
+STATIC const flash_fs_prop_t flash_fs_prop[FLASH_FS_N_PARTS] = {
+    { MICROPY_HW_FLASH_FS_LABEL, "/flash" }
+    #if FLASH_FS_N_PARTS > 1
+    , { MICROPY_HW_FLASH_FS2_LABEL, MICROPY_HW_FLASH_FS2_MOUNT_POINT }
+    #endif
+};
+#endif
+
 #if defined(MICROPY_HW_UART_REPL)
+#err test0001
 #ifndef MICROPY_HW_UART_REPL_RXBUF
 #define MICROPY_HW_UART_REPL_RXBUF (260)
 #endif
@@ -280,7 +305,7 @@ STATIC bool init_sdcard_fs(void) {
                 // subsequent partitions are numbered by their index in the partition table
                 if (part_num == 2) {
                     vfs->str = "/sd2";
-                } else if (part_num == 2) {
+                } else if (part_num == 3) {
                     vfs->str = "/sd3";
                 } else {
                     vfs->str = "/sd4";
@@ -636,6 +661,7 @@ soft_reset:
     // Create it if needed, mount in on /flash, and set it as current dir.
     bool mounted_flash = false;
     #if MICROPY_HW_ENABLE_STORAGE
+    fs_user_mount_flash = NULL;
     mounted_flash = init_flash_fs(reset_mode);
     #endif
 

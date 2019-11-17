@@ -74,6 +74,6 @@ extern const struct _mp_obj_type_t pyb_flash_type;
 extern const struct _pyb_flash_obj_t pyb_flash_obj;
 
 struct _fs_user_mount_t;
-void pyb_flash_init_vfs(struct _fs_user_mount_t *vfs);
+void pyb_flash_init_vfs(struct _fs_user_mount_t *vfs, int part);
 
 #endif // MICROPY_INCLUDED_STM32_STORAGE_H
