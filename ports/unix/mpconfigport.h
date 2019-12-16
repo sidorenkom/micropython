@@ -30,6 +30,9 @@
 #define MODULE_QRCODE_ENABLED       (1)
 #define MODULE_DISPLAY_ENABLED      (1)
 
+#define MICROPY_PY_BUILTINS_HELP    (1)
+#define MICROPY_PY_BUILTINS_HELP_MODULES (1)
+
 // options to control how MicroPython is built
 
 #define MICROPY_ALLOC_PATH_MAX      (PATH_MAX)
