@@ -15,6 +15,7 @@ void STM32F469DISC_board_early_init(void);
 #define MICROPY_HW_ENABLE_RTC       (1)
 #define MICROPY_HW_ENABLE_USB       (1)
 #define MICROPY_HW_ENABLE_SDCARD    (1)
+#define MICROPY_PY_UCRYPTOLIB_CONSTS (1)
 
 // use external SPI flash for storage
 #define MICROPY_HW_SPIFLASH_SIZE_BITS (128 * 1024 * 1024)
