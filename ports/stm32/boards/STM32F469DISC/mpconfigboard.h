@@ -117,15 +117,4 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_USB_FS (1)
 #define MICROPY_HW_USB_VBUS_DETECT_PIN (pin_A9)
 #define MICROPY_HW_USB_OTG_ID_PIN      (pin_A10)
-<<<<<<< HEAD
 
-// 512MBit external QSPI flash, to be memory mapped
-// #define MICROPY_HW_QSPIFLASH_SIZE_BITS_LOG2 (29) // <- check
-// #define MICROPY_HW_QSPIFLASH_CS     (pin_B6)
-// #define MICROPY_HW_QSPIFLASH_SCK    (pin_F10)
-// #define MICROPY_HW_QSPIFLASH_IO0    (pin_D11)
-// #define MICROPY_HW_QSPIFLASH_IO1    (pin_D12)
-// #define MICROPY_HW_QSPIFLASH_IO2    (pin_F7)
-// #define MICROPY_HW_QSPIFLASH_IO3    (pin_D13)
-=======
->>>>>>> STM32F469DISC: add support of QSPI flash for file system (temporary via software SPI). Correct linker memory map.
