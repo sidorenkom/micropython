@@ -101,13 +101,13 @@ MP_WEAK void factory_reset_make_files(FATFS *fatfs) {
     }
 }
 
-MP_WEAK int factory_reset_create_filesystem(void) {
+MP_WEAK int factory_reset_create_filesystem(uint part_num, const TCHAR* label) {
     // LED on to indicate creation of local filesystem
     led_state(PYB_LED_GREEN, 1);
     uint32_t start_tick = HAL_GetTick();
 
     fs_user_mount_t vfs;
-    pyb_flash_init_vfs(&vfs);
+    pyb_flash_init_vfs(&vfs, part_num);
     uint8_t working_buf[FF_MAX_SS];
     FRESULT res = f_mkfs(&vfs.fatfs, FM_FAT, 0, working_buf, sizeof(working_buf));
     if (res != FR_OK) {
@@ -116,7 +116,7 @@ MP_WEAK int factory_reset_create_filesystem(void) {
     }
 
     // Set label
-    f_setlabel(&vfs.fatfs, MICROPY_HW_FLASH_FS_LABEL);
+    f_setlabel(&vfs.fatfs, label);
 
     // Populate the filesystem with factory files
     factory_reset_make_files(&vfs.fatfs);

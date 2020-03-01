@@ -30,6 +30,9 @@
 
 #define FLASH_BLOCK_SIZE (512)
 #define FLASH_PART1_START_BLOCK (0x100)
+#if defined(MICROPY_HW_BDEV2_IOCTL)
+#define FLASH_PART2_START_BLOCK (FLASH_PART1_START_BLOCK + MICROPY_HW_BDEV_IOCTL(BDEV_IOCTL_NUM_BLOCKS, 0))
+#endif
 
 // Try to match Python-level VFS block protocol where possible for these constants
 enum {
