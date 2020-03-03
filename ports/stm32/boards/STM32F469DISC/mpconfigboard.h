@@ -8,7 +8,7 @@ void STM32F469DISC_board_early_init(void);
 #define MICROPY_HW_BOARD_NAME       "F469DISC"
 #define MICROPY_HW_MCU_NAME         "STM32F469"
 
-#define MICROPY_HW_ENABLE_INTERNAL_FLASH_STORAGE (0)
+#define MICROPY_HW_ENABLE_INTERNAL_FLASH_STORAGE (1)
 #define MICROPY_HW_HAS_SWITCH       (1)
 #define MICROPY_HW_HAS_FLASH        (1)
 #define MICROPY_HW_ENABLE_RNG       (1)
@@ -44,13 +44,17 @@ void STM32F469DISC_board_early_init(void);
 // block device config for SPI flash
 extern const struct _mp_spiflash_config_t spiflash_config;
 extern struct _spi_bdev_t spi_bdev;
-#define MICROPY_HW_BDEV_IOCTL(op, arg) ( \
+#define MICROPY_HW_BDEV2_IOCTL(op, arg) ( \
     (op) == BDEV_IOCTL_NUM_BLOCKS ? (MICROPY_HW_SPIFLASH_SIZE_BITS / 8 / FLASH_BLOCK_SIZE) : \
     (op) == BDEV_IOCTL_INIT ? spi_bdev_ioctl(&spi_bdev, (op), (uint32_t)&spiflash_config) : \
     spi_bdev_ioctl(&spi_bdev, (op), (arg)) \
 )
-#define MICROPY_HW_BDEV_READBLOCKS(dest, bl, n) spi_bdev_readblocks(&spi_bdev, (dest), (bl), (n))
-#define MICROPY_HW_BDEV_WRITEBLOCKS(src, bl, n) spi_bdev_writeblocks(&spi_bdev, (src), (bl), (n))
+#define MICROPY_HW_BDEV2_READBLOCKS(dest, bl, n) spi_bdev_readblocks(&spi_bdev, (dest), (bl), (n))
+#define MICROPY_HW_BDEV2_WRITEBLOCKS(src, bl, n) spi_bdev_writeblocks(&spi_bdev, (src), (bl), (n))
+// The volume label used when creating the secondary flash filesystem
+#define MICROPY_HW_FLASH_FS2_LABEL "pybqspi"
+// The mount point for the secondary flash filesystem
+#define MICROPY_HW_FLASH_FS2_MOUNT_POINT "/qspi"
 
 #define MODULE_SECP256K1_ENABLED    (1)
 #define MODULE_HASHLIB_ENABLED      (1)

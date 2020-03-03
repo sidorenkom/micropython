@@ -127,6 +127,16 @@
 #define MICROPY_HW_FLASH_FS_LABEL "pybflash"
 #endif
 
+// The volume label used when creating the secondary flash filesystem
+#ifndef MICROPY_HW_FLASH_FS2_LABEL
+#define MICROPY_HW_FLASH_FS2_LABEL "pybflash2"
+#endif
+
+// The mount point for the secondary flash filesystem
+#ifndef MICROPY_HW_FLASH_FS2_MOUNT_POINT
+#define MICROPY_HW_FLASH_FS2_MOUNT_POINT "/flash2"
+#endif
+
 /*****************************************************************************/
 // General configuration
 

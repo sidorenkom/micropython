@@ -30,6 +30,9 @@
 
 #define FLASH_BLOCK_SIZE (512)
 #define FLASH_PART1_START_BLOCK (0x100)
+#if defined(MICROPY_HW_BDEV2_IOCTL)
+#define FLASH_PART2_START_BLOCK (FLASH_PART1_START_BLOCK + MICROPY_HW_BDEV_IOCTL(BDEV_IOCTL_NUM_BLOCKS, 0))
+#endif
 
 // Try to match Python-level VFS block protocol where possible for these constants
 enum {
@@ -74,6 +77,6 @@ extern const struct _mp_obj_type_t pyb_flash_type;
 extern const struct _pyb_flash_obj_t pyb_flash_obj;
 
 struct _fs_user_mount_t;
-void pyb_flash_init_vfs(struct _fs_user_mount_t *vfs);
+void pyb_flash_init_vfs(struct _fs_user_mount_t *vfs, int part);
 
 #endif // MICROPY_INCLUDED_STM32_STORAGE_H

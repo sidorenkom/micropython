@@ -41,10 +41,6 @@
 #define STORAGE_SYSTICK_MASK    (0x1ff) // 512ms
 #define STORAGE_IDLE_TICK(tick) (((tick) & ~(SYSTICK_DISPATCH_NUM_SLOTS - 1) & STORAGE_SYSTICK_MASK) == 0)
 
-#if defined(MICROPY_HW_BDEV2_IOCTL)
-#define FLASH_PART2_START_BLOCK (FLASH_PART1_START_BLOCK + MICROPY_HW_BDEV2_IOCTL(BDEV_IOCTL_NUM_BLOCKS, 0))
-#endif
-
 static bool storage_is_initialised = false;
 
 static void storage_systick_callback(uint32_t ticks_ms);
@@ -444,11 +440,11 @@ const mp_obj_type_t pyb_flash_type = {
     .locals_dict = (mp_obj_dict_t*)&pyb_flash_locals_dict,
 };
 
-void pyb_flash_init_vfs(fs_user_mount_t *vfs) {
+void pyb_flash_init_vfs(fs_user_mount_t *vfs, int part) {
     vfs->base.type = &mp_fat_vfs_type;
     vfs->blockdev.flags |= MP_BLOCKDEV_FLAG_NATIVE | MP_BLOCKDEV_FLAG_HAVE_IOCTL;
     vfs->fatfs.drv = vfs;
-    vfs->fatfs.part = 1; // flash filesystem lives on first partition
+    vfs->fatfs.part = part; // flash filesystem lives on first partition
     vfs->blockdev.readblocks[0] = MP_OBJ_FROM_PTR(&pyb_flash_readblocks_obj);
     vfs->blockdev.readblocks[1] = MP_OBJ_FROM_PTR(&pyb_flash_obj);
     vfs->blockdev.readblocks[2] = MP_OBJ_FROM_PTR(storage_read_blocks); // native version
