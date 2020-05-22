@@ -60,6 +60,7 @@ extern struct _spi_bdev_t spi_bdev;
 #define MODULE_HASHLIB_ENABLED      (1)
 #define MODULE_DISPLAY_ENABLED      (1)
 #define MODULE_QRCODE_ENABLED       (1)
+#define MODULE_SCARD_ENABLED        (1)
 // #define MICROPY_PY_THREAD           (1)
 
 // HSE is 8MHz
@@ -77,6 +78,10 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_UART6_NAME       "YA"
 #define MICROPY_HW_UART6_TX         (pin_G14)
 #define MICROPY_HW_UART6_RX         (pin_G9)
+#define MICROPY_HW_UART2_NAME       "UART2"
+#define MICROPY_HW_UART2_TX         (pin_A2) // Needed to enable AF
+#define MICROPY_HW_UART2_RX         (pin_A3) // Dummy, not routed on PCB
+#define MICROPY_HW_UART2_CK         (pin_A4)
 
 // I2C busses
 #define MICROPY_HW_I2C1_SCL         (pin_B8)
@@ -100,7 +105,7 @@ extern struct _spi_bdev_t spi_bdev;
 
 // LEDs
 #define MICROPY_HW_LED1             (pin_G6) // green
-#define MICROPY_HW_LED2             (pin_D4) // orange 
+#define MICROPY_HW_LED2             (pin_D4) // orange
 #define MICROPY_HW_LED3             (pin_D5) // red
 #define MICROPY_HW_LED4             (pin_K3) // blue
 #define MICROPY_HW_LED_ON(pin)      (mp_hal_pin_low(pin))
