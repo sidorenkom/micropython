@@ -61,6 +61,7 @@ extern struct _spi_bdev_t spi_bdev;
 #define MODULE_DISPLAY_ENABLED      (1)
 #define MODULE_QRCODE_ENABLED       (1)
 #define MODULE_SCARD_ENABLED        (1)
+#define MODULE_SDRAM_ENABLED 		(1)
 // #define MICROPY_PY_THREAD           (1)
 
 // HSE is 8MHz
