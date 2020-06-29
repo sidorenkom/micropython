@@ -5,6 +5,9 @@ BOARD ?= PYBV10
 # If the build directory is not given, make it reflect the board name.
 BUILD ?= build-$(BOARD)
 
+SKIP_USBINIT ?= 0
+MICROPY_HW_SDCARD_MOUNT_AT_BOOT ?= 0
+
 BOARD_DIR ?= boards/$(BOARD)
 ifeq ($(wildcard $(BOARD_DIR)/.),)
 $(error Invalid BOARD specified: $(BOARD_DIR))
@@ -94,6 +97,8 @@ CFLAGS += $(COPT)
 CFLAGS += -I$(BOARD_DIR)
 CFLAGS += -DSTM32_HAL_H='<stm32$(MCU_SERIES)xx_hal.h>'
 CFLAGS += -DMICROPY_HW_VTOR=$(TEXT0_ADDR)
+CFLAGS += -DSKIP_USBINIT=$(SKIP_USBINIT)
+CFLAGS += -DMICROPY_HW_SDCARD_MOUNT_AT_BOOT=$(MICROPY_HW_SDCARD_MOUNT_AT_BOOT)
 
 # Configure for nan-boxing object model if requested
 ifeq ($(NANBOX),1)

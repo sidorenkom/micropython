@@ -675,8 +675,10 @@ soft_reset:
     can_init0();
     #endif
 
+    #ifndef SKIP_USBINIT
     #if MICROPY_HW_ENABLE_USB
     pyb_usb_init0();
+    #endif
     #endif
 
     // Initialise the local flash filesystem.
@@ -748,6 +750,7 @@ soft_reset:
     // or whose initialisation can be safely deferred until after running
     // boot.py.
 
+    #ifndef SKIP_USBINIT
     #if MICROPY_HW_ENABLE_USB
     // init USB device to default setting if it was not already configured
     if (!(pyb_usb_flags & PYB_USB_FLAG_USB_MODE_CALLED)) {
@@ -760,6 +763,7 @@ soft_reset:
         #endif
         pyb_usb_dev_init(pyb_usb_dev_detect(), USBD_VID, pid, mode, 0, NULL, NULL);
     }
+    #endif
     #endif
 
     #if MICROPY_HW_HAS_MMA7660
