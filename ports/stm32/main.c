@@ -296,6 +296,8 @@ STATIC bool init_flash_fs_part(uint reset_mode, uint part_num, const char* label
             break;
         }
     }
+    mp_obj_t mount_str = mp_obj_new_str_via_qstr(mount_point, strlen(mount_point));
+    mp_vfs_chdir(mount_str);
     return true;
 }
 #endif // defined(MICROPY_HW_BDEV2_IOCTL)
@@ -688,15 +690,16 @@ soft_reset:
     // Initialise the local flash filesystem.
     // Create it if needed, mount in on /flash, and set it as current dir.
     bool mounted_flash = false;
+    bool mounted_flash2 = false;
     #if MICROPY_HW_ENABLE_STORAGE
     #if defined(MICROPY_HW_BDEV2_IOCTL)
     mounted_flash =
         init_flash_fs_part(reset_mode, 1, MICROPY_HW_FLASH_FS_LABEL,
                            qstr_str(MP_QSTR__slash_flash));
-    bool mounted_flash2 =
+    mounted_flash2 =
         init_flash_fs_part(reset_mode, 2, MICROPY_HW_FLASH_FS2_LABEL,
                            MICROPY_HW_FLASH_FS2_MOUNT_POINT);
-    (void)mounted_flash2;
+    // (void)mounted_flash2;
     #else // defined(MICROPY_HW_BDEV2_IOCTL)
     mounted_flash = init_flash_fs(reset_mode);
     #endif // defined(MICROPY_HW_BDEV2_IOCTL)
@@ -721,9 +724,16 @@ soft_reset:
     #endif
 
     // set sys.path based on mounted filesystems (/sd is first so it can override /flash)
+    // TODO: remove in production build
     if (mounted_sdcard) {
         mp_obj_list_append(mp_sys_path, MP_OBJ_NEW_QSTR(MP_QSTR__slash_sd));
         mp_obj_list_append(mp_sys_path, MP_OBJ_NEW_QSTR(MP_QSTR__slash_sd_slash_lib));
+    }
+    // qspi should also be in sys.path
+    // TODO: remove in production build
+    if (mounted_flash2) {
+        mp_obj_list_append(mp_sys_path, mp_obj_new_str_via_qstr("/qspi", 5));
+        mp_obj_list_append(mp_sys_path, mp_obj_new_str_via_qstr("/qspi/lib", 8));
     }
     if (mounted_flash) {
         mp_obj_list_append(mp_sys_path, MP_OBJ_NEW_QSTR(MP_QSTR__slash_flash));
