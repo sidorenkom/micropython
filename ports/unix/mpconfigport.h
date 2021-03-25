@@ -25,10 +25,18 @@
  */
 
 // bitcoin
+#ifndef MODULE_SECP256K1_ENABLED
 #define MODULE_SECP256K1_ENABLED    (1)
+#endif
+#ifndef MODULE_HASHLIB_ENABLED
 #define MODULE_HASHLIB_ENABLED      (1)
-#define MODULE_QRCODE_ENABLED       (1)
+#endif
+#ifndef MODULE_DISPLAY_ENABLED
 #define MODULE_DISPLAY_ENABLED      (1)
+#endif
+#ifndef MODULE_QRCODE_ENABLED
+#define MODULE_QRCODE_ENABLED       (1)
+#endif
 
 #define MICROPY_PY_BUILTINS_HELP    (1)
 #define MICROPY_PY_BUILTINS_HELP_MODULES (1)

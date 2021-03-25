@@ -56,12 +56,24 @@ extern struct _spi_bdev_t spi_bdev;
 // The mount point for the secondary flash filesystem
 #define MICROPY_HW_FLASH_FS2_MOUNT_POINT "/qspi"
 
+#ifndef MODULE_SECP256K1_ENABLED
 #define MODULE_SECP256K1_ENABLED    (1)
+#endif
+#ifndef MODULE_HASHLIB_ENABLED
 #define MODULE_HASHLIB_ENABLED      (1)
+#endif
+#ifndef MODULE_DISPLAY_ENABLED
 #define MODULE_DISPLAY_ENABLED      (1)
+#endif
+#ifndef MODULE_QRCODE_ENABLED
 #define MODULE_QRCODE_ENABLED       (1)
+#endif
+#ifndef MODULE_SCARD_ENABLED
 #define MODULE_SCARD_ENABLED        (1)
+#endif
+#ifndef MODULE_SDRAM_ENABLED
 #define MODULE_SDRAM_ENABLED 		(1)
+#endif
 // #define MICROPY_PY_THREAD           (1)
 
 // HSE is 8MHz
