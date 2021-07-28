@@ -379,8 +379,6 @@ void mp_unix_mark_exec(void);
 
 #define MP_STATE_PORT MP_STATE_VM
 
-// #include "lvgl/src/lv_misc/lv_gc.h"
-
 #if MICROPY_PY_BLUETOOTH
 #if MICROPY_BLUETOOTH_BTSTACK
 struct _mp_bluetooth_btstack_root_pointers_t;

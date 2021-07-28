@@ -372,7 +372,7 @@
 // Enabling this enables spi_bdev_readblocks() and spi_bdev_writeblocks() functions,
 // and requires a valid mp_spiflash_config_t.cache pointer.
 #ifndef MICROPY_HW_SPIFLASH_ENABLE_CACHE
-#define MICROPY_HW_SPIFLASH_ENABLE_CACHE (0)
+#define MICROPY_HW_SPIFLASH_ENABLE_CACHE (1)
 #endif
 
 // Enable the storage sub-system if a block device is defined

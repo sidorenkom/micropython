@@ -403,6 +403,7 @@ HAL_SRC_C += $(addprefix $(HAL_DIR)/Src/stm32$(MCU_SERIES)xx_,\
 	hal_tim_ex.c \
 	hal_uart.c \
 	hal_ltdc.c \
+	hal_ltdc_ex.c \
 	)
 
 ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),f4 f7 h7 l0 l4 wb))
@@ -542,13 +543,16 @@ ifeq ($(MICROPY_PY_LVGL),1)
 CFLAGS += -DMICROPY_PY_LVGL
 LIB_SRC_C += $(shell find $(LVGL_BINDING_DIR)/driver/stm32/$(BOARD)/*.c)
 #LIB_SRC_C += $(shell find $(LVGL_BINDING_DIR)/driver/stm32/string1.c)
-ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),f7))
-SRC_HAL += $(addprefix $(HAL_DIR)/Src/stm32$(MCU_SERIES)xx_,\
-	hal_ltdc.c \
-	hal_ltdc_ex.c \
-	hal_dma2d.c \
-	)
-endif
+
+# Obsolete !!!
+#ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),f7))
+#SRC_HAL += $(addprefix $(HAL_DIR)/Src/stm32$(MCU_SERIES)xx_,\
+#	hal_ltdc.c \
+#	hal_ltdc_ex.c \
+#	hal_dma2d.c \
+#	)
+#endif
+
 endif
 
 OBJ += $(PY_O)

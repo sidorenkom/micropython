@@ -585,6 +585,7 @@ soft_reset:
     // Initialise the local flash filesystem.
     // Create it if needed, mount in on /flash, and set it as current dir.
     bool mounted_flash = false;
+    bool mounted_flash2 = false;
     
     #if MICROPY_HW_FLASH_MOUNT_AT_BOOT
     mounted_flash = init_flash_fs(state.reset_mode);

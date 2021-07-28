@@ -210,10 +210,9 @@
 #ifndef MICROPY_PY_NETWORK
 #define MICROPY_PY_NETWORK          (1)
 #endif
-// LVGL is enable per board
-//#ifndef MICROPY_PY_LVGL
-//#define MICROPY_PY_LVGL             (1)
-//#endif
+#ifndef MICROPY_PY_LVGL
+#define MICROPY_PY_LVGL             (1)
+#endif
 #ifndef MICROPY_PY_LODEPNG
 #define MICROPY_PY_LODEPNG          (1)
 #endif
@@ -391,8 +390,6 @@ struct _mp_bluetooth_nimble_malloc_t;
 #else
 #define MICROPY_PORT_ROOT_POINTER_BLUETOOTH_NIMBLE
 #endif
-
-// #include "lvgl/src/lv_misc/lv_gc.h"
 
 #if MICROPY_BLUETOOTH_BTSTACK
 struct _mp_bluetooth_btstack_root_pointers_t;
