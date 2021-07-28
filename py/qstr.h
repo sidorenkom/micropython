@@ -32,16 +32,28 @@
 // See qstrdefs.h for a list of qstr's that are available as constants.
 // Reference them as MP_QSTR_xxxx.
 //
-// Note: it would be possible to define MP_QSTR_xxx as qstr_from_str_static("xxx")
+// Note: it would be possible to define MP_QSTR_xxx as qstr_from_str("xxx")
 // for qstrs that are referenced this way, but you don't want to have them in ROM.
 
 // first entry in enum will be MP_QSTRnull=0, which indicates invalid/no qstr
 enum {
-#ifndef NO_QSTR
-#define QDEF(id, str) id,
-#include "genhdr/qstrdefs.generated.h"
-#undef QDEF
-#endif
+    #ifndef NO_QSTR
+
+#define QDEF0(id, str) id,
+#define QDEF1(id, str)
+    #include "genhdr/qstrdefs.generated.h"
+#undef QDEF0
+#undef QDEF1
+
+    MP_QSTRspecial_const_number_of, // no underscore so it can't clash with any of the above
+
+#define QDEF0(id, str)
+#define QDEF1(id, str) id,
+    #include "genhdr/qstrdefs.generated.h"
+#undef QDEF0
+#undef QDEF1
+
+    #endif
     MP_QSTRnumber_of, // no underscore so it can't clash with any of the above
 };
 
@@ -52,10 +64,10 @@ typedef struct _qstr_pool_t {
     size_t total_prev_len;
     size_t alloc;
     size_t len;
+    bool sorted;
     const byte *qstrs[];
 } qstr_pool_t;
 
-#define QSTR_FROM_STR_STATIC(s) (qstr_from_strn((s), strlen(s)))
 #define QSTR_TOTAL() (MP_STATE_VM(last_pool)->total_prev_len + MP_STATE_VM(last_pool)->len)
 
 void qstr_init(void);
@@ -73,5 +85,10 @@ const byte *qstr_data(qstr q, size_t *len);
 
 void qstr_pool_info(size_t *n_pool, size_t *n_qstr, size_t *n_str_data_bytes, size_t *n_total_bytes);
 void qstr_dump_data(void);
+
+#if MICROPY_ROM_TEXT_COMPRESSION
+void mp_decompress_rom_string(byte *dst, mp_rom_error_text_t src);
+#define MP_IS_COMPRESSED_ROM_STRING(s) (*(byte *)(s) == 0xff)
+#endif
 
 #endif // MICROPY_INCLUDED_PY_QSTR_H

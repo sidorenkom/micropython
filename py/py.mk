@@ -21,12 +21,70 @@ QSTR_GLOBAL_REQUIREMENTS += $(HEADER_BUILD)/mpversion.h
 # some code is performance bottleneck and compiled with other optimization options
 CSUPEROPT = -O3
 
+# Enable building 32-bit code on 64-bit host.
+ifeq ($(MICROPY_FORCE_32BIT),1)
+CC += -m32
+CXX += -m32
+LD += -m32
+endif
+
+#LittlevGL
+LVGL_BINDING_DIR = $(TOP)/lib/lv_bindings
+LVGL_DIR = $(LVGL_BINDING_DIR)/lvgl
+LVGL_GENERIC_DRV_DIR = $(LVGL_BINDING_DIR)/driver/generic
+INC += -I$(LVGL_BINDING_DIR)
+ALL_LVGL_SRC = $(shell find $(LVGL_DIR) -type f -name '*.h') $(LVGL_BINDING_DIR)/lv_conf.h
+LVGL_PP = $(BUILD)/lvgl/lvgl.pp.c
+LVGL_MPY = $(BUILD)/lvgl/lv_mpy.c
+LVGL_MPY_METADATA = $(BUILD)/lvgl/lv_mpy.json
+QSTR_GLOBAL_DEPENDENCIES += $(LVGL_MPY)
+CFLAGS_MOD += $(LV_CFLAGS) 
+
+$(LVGL_MPY): $(ALL_LVGL_SRC) $(LVGL_BINDING_DIR)/gen/gen_mpy.py 
+	$(ECHO) "LVGL-GEN $@"
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(CPP) $(LV_CFLAGS) -DPYCPARSER -x c -I $(LVGL_BINDING_DIR)/pycparser/utils/fake_libc_include $(INC) $(LVGL_DIR)/lvgl.h > $(LVGL_PP)
+	$(Q)$(PYTHON) $(LVGL_BINDING_DIR)/gen/gen_mpy.py -M lvgl -MP lv -MD $(LVGL_MPY_METADATA) -E $(LVGL_PP) $(LVGL_DIR)/lvgl.h > $@
+
+.PHONY: LVGL_MPY
+LVGL_MPY: $(LVGL_MPY)
+
+CFLAGS_MOD += -Wno-unused-function
+SRC_MOD += $(subst $(TOP)/,,$(shell find $(LVGL_DIR)/src $(LVGL_DIR)/examples $(LVGL_GENERIC_DRV_DIR) -type f -name "*.c") $(LVGL_MPY))
+
+GIT_SUBMODULES += lib/lv_bindings
+
+#lodepng
+LODEPNG_DIR = $(TOP)/lib/lv_bindings/driver/png/lodepng
+MP_LODEPNG_C = $(TOP)/lib/lv_bindings/driver/png/mp_lodepng.c
+ALL_LODEPNG_SRC = $(shell find $(LODEPNG_DIR) -type f)
+LODEPNG_MODULE = $(BUILD)/lodepng/mp_lodepng.c
+LODEPNG_C = $(BUILD)/lodepng/lodepng.c
+LODEPNG_PP = $(BUILD)/lodepng/lodepng.pp.c
+INC += -I$(LODEPNG_DIR)
+LODEPNG_CFLAGS += -DLODEPNG_NO_COMPILE_ENCODER -DLODEPNG_NO_COMPILE_DISK -DLODEPNG_NO_COMPILE_ALLOCATORS
+CFLAGS_MOD += $(LODEPNG_CFLAGS)
+
+$(LODEPNG_MODULE): $(ALL_LODEPNG_SRC) $(LVGL_BINDING_DIR)/gen/gen_mpy.py 
+	$(ECHO) "LODEPNG-GEN $@"
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(CPP) $(LODEPNG_CFLAGS) -DPYCPARSER -x c $(INC) -I $(LVGL_BINDING_DIR)/pycparser/utils/fake_libc_include $(LODEPNG_DIR)/lodepng.h > $(LODEPNG_PP)
+	$(Q)$(PYTHON) $(LVGL_BINDING_DIR)/gen/gen_mpy.py -M lodepng -E $(LODEPNG_PP) $(LODEPNG_DIR)/lodepng.h > $@
+
+$(LODEPNG_C): $(LODEPNG_DIR)/lodepng.cpp $(LODEPNG_DIR)/*
+	$(Q)mkdir -p $(dir $@)
+	cp $< $@
+
+SRC_MOD += $(subst $(TOP)/,,$(LODEPNG_C) $(MP_LODEPNG_C) $(LODEPNG_MODULE))
+
 # External modules written in C.
 ifneq ($(USER_C_MODULES),)
 # pre-define USERMOD variables as expanded so that variables are immediate
 # expanded as they're added to them
 SRC_USERMOD :=
+SRC_USERMOD_CXX :=
 CFLAGS_USERMOD :=
+CXXFLAGS_USERMOD :=
 LDFLAGS_USERMOD :=
 $(foreach module, $(wildcard $(USER_C_MODULES)/*/micropython.mk), \
     $(eval USERMOD_DIR = $(patsubst %/,%,$(dir $(module))))\
@@ -35,7 +93,9 @@ $(foreach module, $(wildcard $(USER_C_MODULES)/*/micropython.mk), \
 )
 
 SRC_MOD += $(patsubst $(USER_C_MODULES)/%.c,%.c,$(SRC_USERMOD))
+SRC_MOD_CXX += $(patsubst $(USER_C_MODULES)/%.cpp,%.cpp,$(SRC_USERMOD_CXX))
 CFLAGS_MOD += $(CFLAGS_USERMOD)
+CXXFLAGS_MOD += $(CXXFLAGS_USERMOD)
 LDFLAGS_MOD += $(LDFLAGS_USERMOD)
 endif
 
@@ -46,6 +106,7 @@ PY_CORE_O_BASENAME = $(addprefix py/,\
 	nlrx86.o \
 	nlrx64.o \
 	nlrthumb.o \
+	nlraarch64.o \
 	nlrpowerpc.o \
 	nlrxtensa.o \
 	nlrsetjmp.o \
@@ -87,6 +148,7 @@ PY_CORE_O_BASENAME = $(addprefix py/,\
 	runtime_utils.o \
 	scheduler.o \
 	nativeglue.o \
+	pairheap.o \
 	ringbuf.o \
 	stackctrl.o \
 	argcheck.o \
@@ -160,6 +222,7 @@ PY_CORE_O_BASENAME = $(addprefix py/,\
 	)
 
 PY_EXTMOD_O_BASENAME = \
+	extmod/moduasyncio.o \
 	extmod/moductypes.o \
 	extmod/modujson.o \
 	extmod/modure.o \
@@ -246,12 +309,19 @@ $(HEADER_BUILD)/qstrdefs.generated.h: $(PY_QSTR_DEFS) $(QSTR_DEFS) $(QSTR_DEFS_C
 	$(Q)$(CAT) $(PY_QSTR_DEFS) $(QSTR_DEFS) $(QSTR_DEFS_COLLECTED) | $(SED) 's/^Q(.*)/"&"/' | $(CPP) $(CFLAGS) - | $(SED) 's/^\"\(Q(.*)\)\"/\1/' > $(HEADER_BUILD)/qstrdefs.preprocessed.h
 	$(Q)$(PYTHON) $(PY_SRC)/makeqstrdata.py $(HEADER_BUILD)/qstrdefs.preprocessed.h > $@
 
+$(HEADER_BUILD)/compressed.data.h: $(HEADER_BUILD)/compressed.collected
+	$(ECHO) "GEN $@"
+	$(Q)$(PYTHON) $(PY_SRC)/makecompresseddata.py $< > $@
+
 # build a list of registered modules for py/objmodule.c.
 $(HEADER_BUILD)/moduledefs.h: $(SRC_QSTR) $(QSTR_GLOBAL_DEPENDENCIES) | $(HEADER_BUILD)/mpversion.h
 	@$(ECHO) "GEN $@"
 	$(Q)$(PYTHON) $(PY_SRC)/makemoduledefs.py --vpath="., $(TOP), $(USER_C_MODULES)" $(SRC_QSTR) > $@
 
-SRC_QSTR += $(HEADER_BUILD)/moduledefs.h
+# Standard C functions like memset need to be compiled with special flags so
+# the compiler does not optimise these functions in terms of themselves.
+CFLAGS_BUILTIN ?= -ffreestanding -fno-builtin -fno-lto
+$(BUILD)/lib/libc/string0.o: CFLAGS += $(CFLAGS_BUILTIN)
 
 # Force nlr code to always be compiled with space-saving optimisation so
 # that the function preludes are of a minimal and predictable form.

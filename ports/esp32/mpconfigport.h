@@ -6,10 +6,7 @@
 
 #include <stdint.h>
 #include <alloca.h>
-
-#if !MICROPY_ESP_IDF_4
-#include "rom/ets_sys.h"
-#endif
+#include "esp_system.h"
 
 #define MODULE_SECP256K1_ENABLED    (1)
 #define MODULE_HASHLIB_ENABLED      (1)
@@ -57,7 +54,7 @@
 #define MICROPY_MODULE_FROZEN_MPY           (1)
 #define MICROPY_QSTR_EXTRA_POOL             mp_qstr_frozen_const_pool
 #define MICROPY_CAN_OVERRIDE_BUILTINS       (1)
-#define MICROPY_USE_INTERNAL_ERRNO          (1)
+#define MICROPY_USE_INTERNAL_ERRNO          (0) // errno.h from xtensa-esp32-elf/sys-include/sys
 #define MICROPY_USE_INTERNAL_PRINTF         (0) // ESP32 SDK requires its own printf
 #define MICROPY_ENABLE_SCHEDULER            (1)
 #define MICROPY_SCHEDULER_DEPTH             (8)
@@ -66,6 +63,7 @@
 // control over Python builtins
 #define MICROPY_PY_FUNCTION_ATTRS           (1)
 #define MICROPY_PY_DESCRIPTORS              (1)
+#define MICROPY_PY_DELATTR_SETATTR          (1)
 #define MICROPY_PY_STR_BYTES_CMP_WARN       (1)
 #define MICROPY_PY_BUILTINS_STR_UNICODE     (1)
 #define MICROPY_PY_BUILTINS_STR_CENTER      (1)
@@ -81,7 +79,6 @@
 #define MICROPY_PY_BUILTINS_PROPERTY        (1)
 #define MICROPY_PY_BUILTINS_RANGE_ATTRS     (1)
 #define MICROPY_PY_BUILTINS_ROUND_INT       (1)
-#define MICROPY_PY_BUILTINS_TIMEOUTERROR    (1)
 #define MICROPY_PY_ALL_SPECIAL_METHODS      (1)
 #define MICROPY_PY_BUILTINS_COMPILE         (1)
 #define MICROPY_PY_BUILTINS_ENUMERATE       (1)
@@ -128,6 +125,13 @@
 #define MICROPY_PY_THREAD_GIL_VM_DIVISOR    (32)
 
 // extended modules
+#ifndef MICROPY_PY_BLUETOOTH
+#define MICROPY_PY_BLUETOOTH                (1)
+#define MICROPY_PY_BLUETOOTH_ENABLE_CENTRAL_MODE (1)
+#define MICROPY_BLUETOOTH_NIMBLE            (1)
+#define MICROPY_BLUETOOTH_NIMBLE_BINDINGS_ONLY (1)
+#endif
+#define MICROPY_PY_UASYNCIO                 (1)
 #define MICROPY_PY_UCTYPES                  (1)
 #define MICROPY_PY_UZLIB                    (1)
 #define MICROPY_PY_UJSON                    (1)
@@ -143,17 +147,18 @@
 #define MICROPY_PY_UBINASCII_CRC32          (1)
 #define MICROPY_PY_URANDOM                  (1)
 #define MICROPY_PY_URANDOM_EXTRA_FUNCS      (1)
+#define MICROPY_PY_URANDOM_SEED_INIT_FUNC   (esp_random())
 #define MICROPY_PY_OS_DUPTERM               (1)
 #define MICROPY_PY_MACHINE                  (1)
 #define MICROPY_PY_MACHINE_PIN_MAKE_NEW     mp_pin_make_new
 #define MICROPY_PY_MACHINE_PULSE            (1)
 #define MICROPY_PY_MACHINE_I2C              (1)
-#define MICROPY_PY_MACHINE_I2C_MAKE_NEW     machine_hw_i2c_make_new
 #define MICROPY_PY_MACHINE_SPI              (1)
 #define MICROPY_PY_MACHINE_SPI_MSB          (0)
 #define MICROPY_PY_MACHINE_SPI_LSB          (1)
-#define MICROPY_PY_MACHINE_SPI_MAKE_NEW     machine_hw_spi_make_new
+#ifndef MICROPY_HW_ENABLE_SDCARD
 #define MICROPY_HW_ENABLE_SDCARD            (1)
+#endif
 #define MICROPY_HW_SOFTSPI_MIN_DELAY        (0)
 #define MICROPY_HW_SOFTSPI_MAX_BAUDRATE     (ets_get_cpu_frequency() * 1000000 / 200) // roughly
 #define MICROPY_PY_USSL                     (1)
@@ -162,9 +167,15 @@
 #define MICROPY_PY_UWEBSOCKET               (1)
 #define MICROPY_PY_WEBREPL                  (1)
 #define MICROPY_PY_FRAMEBUF                 (1)
+#define MICROPY_PY_BTREE                    (1)
 #define MICROPY_PY_USOCKET_EVENTS           (MICROPY_PY_WEBREPL)
 #define MICROPY_PY_BLUETOOTH_RANDOM_ADDR    (1)
-#define MICROPY_PY_BLUETOOTH_DEFAULT_NAME   ("ESP32")
+#define MICROPY_PY_BLUETOOTH_DEFAULT_GAP_NAME ("ESP32")
+
+#define MICROPY_PY_LVGL                     (1)
+#define MICROPY_PY_ESPIDF                   (1)
+#define MICROPY_PY_LODEPNG                  (1)
+#define MICROPY_PY_RTCH                     (1)
 
 // fatfs configuration
 #define MICROPY_FATFS_ENABLE_LFN            (1)
@@ -193,6 +204,45 @@ extern const struct _mp_obj_module_t mp_module_usocket;
 extern const struct _mp_obj_module_t mp_module_machine;
 extern const struct _mp_obj_module_t mp_module_network;
 extern const struct _mp_obj_module_t mp_module_onewire;
+extern const struct _mp_obj_module_t mp_module_lvgl;
+extern const struct _mp_obj_module_t mp_module_espidf;
+extern const struct _mp_obj_module_t mp_module_rtch;
+extern const struct _mp_obj_module_t mp_module_lodepng;
+// extern const struct _mp_obj_module_t mp_module_ILI9341;
+// extern const struct _mp_obj_module_t mp_module_xpt2046;
+
+#if MICROPY_PY_LVGL
+#define MICROPY_PORT_LVGL_DEF \
+    { MP_OBJ_NEW_QSTR(MP_QSTR_lvgl), (mp_obj_t)&mp_module_lvgl }, \
+//    { MP_OBJ_NEW_QSTR(MP_QSTR_ILI9341), (mp_obj_t)&mp_module_ILI9341 },
+//    { MP_OBJ_NEW_QSTR(MP_QSTR_xpt2046), (mp_obj_t)&mp_module_xpt2046 },
+
+// lvesp needs to delete the timer task upon soft reset
+
+extern void lv_deinit(void);
+#define MICROPY_PORT_DEINIT_FUNC lv_deinit()
+
+#else
+#define MICROPY_PORT_LVGL_DEF
+#endif
+
+#if MICROPY_PY_ESPIDF
+#define MICROPY_PORT_ESPIDF_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_espidf), (mp_obj_t)&mp_module_espidf },
+#else
+#define MICROPY_PORT_ESPIDF_DEF
+#endif
+
+#if MICROPY_PY_LODEPNG
+#define MICROPY_PORT_LODEPNG_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_lodepng), (mp_obj_t)&mp_module_lodepng },
+#else
+#define MICROPY_PORT_LODEPNG_DEF
+#endif
+
+#if MICROPY_PY_RTCH
+#define MICROPY_PORT_RTCH_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_rtch), (mp_obj_t)&mp_module_rtch },
+#else
+#define MICROPY_PORT_RTCH_DEF
+#endif
 
 #define MICROPY_PORT_BUILTIN_MODULES \
     { MP_OBJ_NEW_QSTR(MP_QSTR_esp), (mp_obj_t)&esp_module }, \
@@ -203,11 +253,26 @@ extern const struct _mp_obj_module_t mp_module_onewire;
     { MP_OBJ_NEW_QSTR(MP_QSTR_machine), (mp_obj_t)&mp_module_machine }, \
     { MP_OBJ_NEW_QSTR(MP_QSTR_network), (mp_obj_t)&mp_module_network }, \
     { MP_OBJ_NEW_QSTR(MP_QSTR__onewire), (mp_obj_t)&mp_module_onewire }, \
-    { MP_OBJ_NEW_QSTR(MP_QSTR_uhashlib), (mp_obj_t)&mp_module_uhashlib }, \
+    MICROPY_PORT_LVGL_DEF \
+    MICROPY_PORT_ESPIDF_DEF \
+    MICROPY_PORT_LODEPNG_DEF \
+    MICROPY_PORT_RTCH_DEF
 
 #define MP_STATE_PORT MP_STATE_VM
 
 struct _machine_timer_obj_t;
+
+#if MICROPY_PY_LVGL
+#ifndef MICROPY_INCLUDED_PY_MPSTATE_H
+#define MICROPY_INCLUDED_PY_MPSTATE_H
+#include "lib/lv_bindings/lvgl/src/misc/lv_gc.h"
+#undef MICROPY_INCLUDED_PY_MPSTATE_H
+#else
+#include "lib/lv_bindings/lvgl/src/misc/lv_gc.h"
+#endif
+#else
+#define LV_ROOTS
+#endif
 
 #if MICROPY_BLUETOOTH_NIMBLE
 struct mp_bluetooth_nimble_root_pointers_t;
@@ -217,6 +282,8 @@ struct mp_bluetooth_nimble_root_pointers_t;
 #endif
 
 #define MICROPY_PORT_ROOT_POINTERS \
+    LV_ROOTS \
+    void *mp_lv_user_data; \
     const char *readline_hist[8]; \
     mp_obj_t machine_pin_irq_handler[40]; \
     struct _machine_timer_obj_t *machine_timer_obj_head; \
@@ -224,10 +291,8 @@ struct mp_bluetooth_nimble_root_pointers_t;
 
 // type definitions for the specific machine
 
-#define BYTES_PER_WORD (4)
-#define MICROPY_MAKE_POINTER_CALLABLE(p) ((void*)((mp_uint_t)(p)))
-#define MP_PLAT_PRINT_STRN(str, len) mp_hal_stdout_tx_strn_cooked(str, len)
-void *esp_native_code_commit(void*, size_t, void*);
+#define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)((mp_uint_t)(p)))
+void *esp_native_code_commit(void *, size_t, void *);
 #define MP_PLAT_COMMIT_EXEC(buf, len, reloc) esp_native_code_commit(buf, len, reloc)
 #define MP_SSIZE_MAX (0x7fffffff)
 
@@ -247,8 +312,8 @@ void *esp_native_code_commit(void*, size_t, void*);
 #if MICROPY_PY_THREAD
 #define MICROPY_EVENT_POLL_HOOK \
     do { \
-        extern void mp_handle_pending(void); \
-        mp_handle_pending(); \
+        extern void mp_handle_pending(bool); \
+        mp_handle_pending(true); \
         MICROPY_PY_USOCKET_EVENTS_HANDLER \
         MP_THREAD_GIL_EXIT(); \
         MP_THREAD_GIL_ENTER(); \
@@ -256,12 +321,16 @@ void *esp_native_code_commit(void*, size_t, void*);
 #else
 #define MICROPY_EVENT_POLL_HOOK \
     do { \
-        extern void mp_handle_pending(void); \
-        mp_handle_pending(); \
+        extern void mp_handle_pending(bool); \
+        mp_handle_pending(true); \
         MICROPY_PY_USOCKET_EVENTS_HANDLER \
-        asm("waiti 0"); \
+        asm ("waiti 0"); \
     } while (0);
 #endif
+
+// Functions that should go in IRAM
+#define MICROPY_WRAP_MP_SCHED_EXCEPTION(f) IRAM_ATTR f
+#define MICROPY_WRAP_MP_SCHED_KEYBOARD_INTERRUPT(f) IRAM_ATTR f
 
 #define UINT_FMT "%u"
 #define INT_FMT "%d"

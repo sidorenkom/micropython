@@ -41,7 +41,15 @@
 #define MICROPY_PY_BUILTINS_HELP    (1)
 #define MICROPY_PY_BUILTINS_HELP_MODULES (1)
 
-// options to control how MicroPython is built
+// Options to control how MicroPython is built for this port,
+// overriding defaults in py/mpconfig.h.
+
+// Variant-specific definitions.
+#include "mpconfigvariant.h"
+
+// The minimal variant's config covers everything.
+// If we're building the minimal variant, ignore the rest of this file.
+#ifndef MICROPY_UNIX_MINIMAL
 
 #define MICROPY_ALLOC_PATH_MAX      (PATH_MAX)
 #define MICROPY_PERSISTENT_CODE_LOAD (1)
@@ -53,7 +61,7 @@
 #endif
 #if !defined(MICROPY_EMIT_THUMB) && defined(__thumb2__)
     #define MICROPY_EMIT_THUMB      (1)
-    #define MICROPY_MAKE_POINTER_CALLABLE(p) ((void*)((mp_uint_t)(p) | 1))
+    #define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)((mp_uint_t)(p) | 1))
 #endif
 // Some compilers define __thumb2__ and __arm__ at the same time, let
 // autodetected thumb2 emitter have priority.
@@ -81,9 +89,13 @@
 #define MICROPY_REPL_AUTO_INDENT    (1)
 #define MICROPY_HELPER_LEXER_UNIX   (1)
 #define MICROPY_ENABLE_SOURCE_LINE  (1)
+#ifndef MICROPY_FLOAT_IMPL
 #define MICROPY_FLOAT_IMPL          (MICROPY_FLOAT_IMPL_DOUBLE)
+#endif
 #define MICROPY_LONGINT_IMPL        (MICROPY_LONGINT_IMPL_MPZ)
+#ifndef MICROPY_STREAMS_NON_BLOCK
 #define MICROPY_STREAMS_NON_BLOCK   (1)
+#endif
 #define MICROPY_STREAMS_POSIX_API   (1)
 #define MICROPY_OPT_COMPUTED_GOTO   (1)
 #ifndef MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE
@@ -91,8 +103,10 @@
 #endif
 #define MICROPY_MODULE_WEAK_LINKS   (1)
 #define MICROPY_CAN_OVERRIDE_BUILTINS (1)
+#define MICROPY_VFS_POSIX_FILE      (1)
 #define MICROPY_PY_FUNCTION_ATTRS   (1)
 #define MICROPY_PY_DESCRIPTORS      (1)
+#define MICROPY_PY_DELATTR_SETATTR  (1)
 #define MICROPY_PY_BUILTINS_STR_UNICODE (1)
 #define MICROPY_PY_BUILTINS_STR_CENTER (1)
 #define MICROPY_PY_BUILTINS_STR_PARTITION (1)
@@ -116,10 +130,14 @@
 #define MICROPY_PERSISTENT_CODE_SAVE (1)
 #define MICROPY_COMP_CONST (0)
 #endif
+#ifndef MICROPY_PY_SYS_PLATFORM
 #if defined(__APPLE__) && defined(__MACH__)
     #define MICROPY_PY_SYS_PLATFORM  "darwin"
+    #define LINUX_FRAME_BUFFER 0
 #else
     #define MICROPY_PY_SYS_PLATFORM  "linux"
+    #define LINUX_FRAME_BUFFER 1
+#endif
 #endif
 #define MICROPY_PY_SYS_MAXSIZE      (1)
 #define MICROPY_PY_SYS_STDFILES     (1)
@@ -138,6 +156,15 @@
 #ifndef MICROPY_STACKLESS
 #define MICROPY_STACKLESS           (0)
 #define MICROPY_STACKLESS_STRICT    (0)
+#endif
+
+#define MICROPY_PY_LVGL             (1)
+#define MICROPY_PY_LVGL_SDL         (1)
+#define MICROPY_PY_LVGL_LODEPNG     (1)
+#if LINUX_FRAME_BUFFER
+    #define MICROPY_PY_LVGL_FB      (1)
+#else
+    #define MICROPY_PY_LVGL_FB      (0)
 #endif
 
 #define MICROPY_PY_OS_STATVFS       (1)
@@ -181,22 +208,23 @@
 #define MICROPY_ERROR_PRINTER       (&mp_stderr_print)
 #define MICROPY_PY_STR_BYTES_CMP_WARN (1)
 
+// VFS stat functions should return time values relative to 1970/1/1
+#define MICROPY_EPOCH_IS_1970       (1)
+
 extern const struct _mp_print_t mp_stderr_print;
 
-// Define to 1 to use undertested inefficient GC helper implementation
-// (if more efficient arch-specific one is not available).
-#ifndef MICROPY_GCREGS_SETJMP
-    #ifdef __mips__
-        #define MICROPY_GCREGS_SETJMP (1)
-    #else
-        #define MICROPY_GCREGS_SETJMP (0)
-    #endif
+#if !(defined(MICROPY_GCREGS_SETJMP) || defined(__x86_64__) || defined(__i386__) || defined(__thumb2__) || defined(__thumb__) || defined(__arm__))
+// Fall back to setjmp() implementation for discovery of GC pointers in registers.
+#define MICROPY_GCREGS_SETJMP (1)
 #endif
 
 #define MICROPY_ENABLE_EMERGENCY_EXCEPTION_BUF   (1)
 #define MICROPY_EMERGENCY_EXCEPTION_BUF_SIZE  (256)
 #define MICROPY_KBD_EXCEPTION       (1)
 #define MICROPY_ASYNC_KBD_INTR      (1)
+
+#define mp_type_fileio mp_type_vfs_posix_fileio
+#define mp_type_textio mp_type_vfs_posix_textio
 
 extern const struct _mp_obj_module_t mp_module_machine;
 extern const struct _mp_obj_module_t mp_module_os;
@@ -207,6 +235,11 @@ extern const struct _mp_obj_module_t mp_module_termios;
 extern const struct _mp_obj_module_t mp_module_socket;
 extern const struct _mp_obj_module_t mp_module_ffi;
 extern const struct _mp_obj_module_t mp_module_jni;
+extern const struct _mp_obj_module_t mp_module_lvgl;
+extern const struct _mp_obj_module_t mp_module_lvindev;
+extern const struct _mp_obj_module_t mp_module_SDL;
+extern const struct _mp_obj_module_t mp_module_fb;
+extern const struct _mp_obj_module_t mp_module_lodepng;
 
 #if MICROPY_PY_UOS_VFS
 #define MICROPY_PY_UOS_DEF { MP_ROM_QSTR(MP_QSTR_uos), MP_ROM_PTR(&mp_module_uos_vfs) },
@@ -244,6 +277,35 @@ extern const struct _mp_obj_module_t mp_module_jni;
 #define MICROPY_PY_USELECT_DEF
 #endif
 
+#if MICROPY_PY_LVGL
+#ifndef MICROPY_INCLUDED_PY_MPSTATE_H
+#define MICROPY_INCLUDED_PY_MPSTATE_H
+#include "lib/lv_bindings/lvgl/src/misc/lv_gc.h"
+#undef MICROPY_INCLUDED_PY_MPSTATE_H
+#else
+#include "lib/lv_bindings/lvgl/src/misc/lv_gc.h"
+#endif
+#define MICROPY_PY_LVGL_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_lvgl), (mp_obj_t)&mp_module_lvgl },
+    #if MICROPY_PY_LVGL_SDL
+    #define MICROPY_PY_LVGL_SDL_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_SDL), (mp_obj_t)&mp_module_SDL },
+    #else
+    #define MICROPY_PY_LVGL_SDL_DEF
+    #endif
+    #if MICROPY_PY_LVGL_FB
+    #define MICROPY_PY_LVGL_FB_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_fb), (mp_obj_t)&mp_module_fb },
+    #else
+    #define MICROPY_PY_LVGL_FB_DEF
+    #endif
+    #if MICROPY_PY_LVGL_LODEPNG
+    #define MICROPY_PY_LVGL_LODEPNG_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_lodepng), (mp_obj_t)&mp_module_lodepng },
+    #else
+    #define MICROPY_PY_LVGL_LODEPNG_DEF
+    #endif
+#else
+    #define LV_ROOTS
+    #define MICROPY_PY_LVGL_DEF
+#endif
+
 #define MICROPY_PORT_BUILTIN_MODULES \
     MICROPY_PY_FFI_DEF \
     MICROPY_PY_JNI_DEF \
@@ -253,6 +315,10 @@ extern const struct _mp_obj_module_t mp_module_jni;
     MICROPY_PY_UOS_DEF \
     MICROPY_PY_USELECT_DEF \
     MICROPY_PY_TERMIOS_DEF \
+    MICROPY_PY_LVGL_DEF \
+    MICROPY_PY_LVGL_SDL_DEF \
+    MICROPY_PY_LVGL_FB_DEF \
+    MICROPY_PY_LVGL_LODEPNG_DEF
 
 // type definitions for the specific machine
 
@@ -279,7 +345,7 @@ typedef long long mp_off_t;
 typedef long mp_off_t;
 #endif
 
-void mp_unix_alloc_exec(size_t min_size, void** ptr, size_t *size);
+void mp_unix_alloc_exec(size_t min_size, void **ptr, size_t *size);
 void mp_unix_free_exec(void *ptr, size_t size);
 void mp_unix_mark_exec(void);
 #define MP_PLAT_ALLOC_EXEC(min_size, ptr, size) mp_unix_alloc_exec(min_size, ptr, size)
@@ -288,12 +354,6 @@ void mp_unix_mark_exec(void);
 // Use MP_PLAT_ALLOC_EXEC for any executable memory allocation, including for FFI
 // (overriding libffi own implementation)
 #define MICROPY_FORCE_PLAT_ALLOC_EXEC (1)
-#endif
-
-#if MICROPY_PY_OS_DUPTERM
-#define MP_PLAT_PRINT_STRN(str, len) mp_hal_stdout_tx_strn_cooked(str, len)
-#else
-#define MP_PLAT_PRINT_STRN(str, len) do { ssize_t ret = write(1, str, len); (void)ret; } while (0)
 #endif
 
 #ifdef __linux__
@@ -319,13 +379,28 @@ void mp_unix_mark_exec(void);
 
 #define MP_STATE_PORT MP_STATE_VM
 
-#include "lvgl/src/lv_misc/lv_gc.h"
+// #include "lvgl/src/lv_misc/lv_gc.h"
+
+#if MICROPY_PY_BLUETOOTH
+#if MICROPY_BLUETOOTH_BTSTACK
+struct _mp_bluetooth_btstack_root_pointers_t;
+#define MICROPY_BLUETOOTH_ROOT_POINTERS struct _mp_bluetooth_btstack_root_pointers_t *bluetooth_btstack_root_pointers;
+#endif
+#if MICROPY_BLUETOOTH_NIMBLE
+struct _mp_bluetooth_nimble_root_pointers_t;
+struct _mp_bluetooth_nimble_malloc_t;
+#define MICROPY_BLUETOOTH_ROOT_POINTERS struct _mp_bluetooth_nimble_malloc_t *bluetooth_nimble_memory; struct _mp_bluetooth_nimble_root_pointers_t *bluetooth_nimble_root_pointers;
+#endif
+#else
+#define MICROPY_BLUETOOTH_ROOT_POINTERS
+#endif
 
 #define MICROPY_PORT_ROOT_POINTERS \
     LV_ROOTS \
     void *mp_lv_user_data; \
     const char *readline_hist[50]; \
     void *mmap_region_head; \
+    MICROPY_BLUETOOTH_ROOT_POINTERS \
 
 // We need to provide a declaration/definition of alloca()
 // unless support for it is disabled.
@@ -355,3 +430,20 @@ void mp_unix_mark_exec(void);
 // For debugging purposes, make printf() available to any source file.
 #include <stdio.h>
 #endif
+
+#if MICROPY_PY_THREAD
+#define MICROPY_BEGIN_ATOMIC_SECTION() (mp_thread_unix_begin_atomic_section(), 0xffffffff)
+#define MICROPY_END_ATOMIC_SECTION(x) (void)x; mp_thread_unix_end_atomic_section()
+#endif
+
+#define MICROPY_EVENT_POLL_HOOK \
+    do { \
+        extern void mp_handle_pending(bool); \
+        mp_handle_pending(true); \
+        mp_hal_delay_us(500); \
+    } while (0);
+
+#include <sched.h>
+#define MICROPY_UNIX_MACHINE_IDLE sched_yield();
+
+#endif // MICROPY_UNIX_MINIMAL

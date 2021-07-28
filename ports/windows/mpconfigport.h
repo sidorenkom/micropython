@@ -31,7 +31,7 @@
 #define MICROPY_USE_READLINE        (1)
 #endif
 
-#define MICROPY_ALLOC_PATH_MAX      (260) //see minwindef.h for msvc or limits.h for mingw
+#define MICROPY_ALLOC_PATH_MAX      (260) // see minwindef.h for msvc or limits.h for mingw
 #define MICROPY_PERSISTENT_CODE_LOAD (1)
 #define MICROPY_EMIT_X64            (0)
 #define MICROPY_EMIT_THUMB          (0)
@@ -43,10 +43,11 @@
 #define MICROPY_ENABLE_FINALISER    (1)
 #define MICROPY_ENABLE_PYSTACK      (1)
 #define MICROPY_STACK_CHECK         (1)
-#define MICROPY_MALLOC_USES_ALLOCATED_SIZE (1)
-#define MICROPY_MEM_STATS           (1)
+#define MICROPY_MALLOC_USES_ALLOCATED_SIZE (0)
+#define MICROPY_MEM_STATS           (0)
 #define MICROPY_DEBUG_PRINTER       (&mp_stderr_print)
 #define MICROPY_DEBUG_PRINTERS      (1)
+#define MICROPY_ENABLE_SCHEDULER    (1)
 #define MICROPY_READER_POSIX        (1)
 #define MICROPY_USE_READLINE_HISTORY (1)
 #define MICROPY_HELPER_REPL         (1)
@@ -62,8 +63,10 @@
 #define MICROPY_OPT_CACHE_MAP_LOOKUP_IN_BYTECODE (1)
 #define MICROPY_MODULE_WEAK_LINKS   (1)
 #define MICROPY_CAN_OVERRIDE_BUILTINS (1)
+#define MICROPY_VFS_POSIX_FILE      (1)
 #define MICROPY_PY_FUNCTION_ATTRS   (1)
 #define MICROPY_PY_DESCRIPTORS      (1)
+#define MICROPY_PY_DELATTR_SETATTR  (1)
 #define MICROPY_PY_BUILTINS_STR_UNICODE (1)
 #define MICROPY_PY_BUILTINS_STR_CENTER (1)
 #define MICROPY_PY_BUILTINS_STR_PARTITION (1)
@@ -74,13 +77,18 @@
 #define MICROPY_PY_BUILTINS_NOTIMPLEMENTED (1)
 #define MICROPY_PY_BUILTINS_INPUT   (1)
 #define MICROPY_PY_BUILTINS_POW3    (1)
+#define MICROPY_PY_BUILTINS_ROUND_INT (1)
 #define MICROPY_PY_MICROPYTHON_MEM_INFO (1)
 #define MICROPY_PY_ALL_SPECIAL_METHODS (1)
 #define MICROPY_PY_REVERSE_SPECIAL_METHODS (1)
 #define MICROPY_PY_ARRAY_SLICE_ASSIGN (1)
 #define MICROPY_PY_BUILTINS_SLICE_ATTRS (1)
 #define MICROPY_PY_SYS_EXIT         (1)
+#define MICROPY_PY_SYS_ATEXIT       (1)
 #define MICROPY_PY_SYS_PLATFORM     "win32"
+#ifndef MICROPY_PY_SYS_PATH_DEFAULT
+#define MICROPY_PY_SYS_PATH_DEFAULT "~/.micropython/lib"
+#endif
 #define MICROPY_PY_SYS_MAXSIZE      (1)
 #define MICROPY_PY_SYS_STDFILES     (1)
 #define MICROPY_PY_SYS_EXC_INFO     (1)
@@ -89,6 +97,7 @@
 #define MICROPY_PY_MATH_SPECIAL_FUNCTIONS (1)
 #define MICROPY_PY_MATH_ISCLOSE     (1)
 #define MICROPY_PY_CMATH            (1)
+#define MICROPY_PY_IO_IOBASE        (1)
 #define MICROPY_PY_IO_FILEIO        (1)
 #define MICROPY_PY_GC_COLLECT_RETVAL (1)
 #define MICROPY_MODULE_FROZEN_STR   (0)
@@ -109,6 +118,7 @@
 #define MICROPY_PY_UBINASCII        (1)
 #define MICROPY_PY_UBINASCII_CRC32  (1)
 #define MICROPY_PY_URANDOM          (1)
+#define MICROPY_PY_URANDOM_EXTRA_FUNCS (1)
 #define MICROPY_PY_MACHINE          (1)
 #define MICROPY_PY_MACHINE_PULSE    (1)
 #define MICROPY_MACHINE_MEM_GET_READ_ADDR   mod_machine_mem_get_addr
@@ -118,6 +128,15 @@
 #define MICROPY_ERROR_PRINTER       (&mp_stderr_print)
 #define MICROPY_WARNINGS            (1)
 #define MICROPY_PY_STR_BYTES_CMP_WARN (1)
+//use large block for GC to increase speed of allocate, but consume more memory
+#define MICROPY_BYTES_PER_GC_BLOCK (64 * BYTES_PER_WORD)
+
+
+// VFS stat functions should return time values relative to 1970/1/1
+#define MICROPY_EPOCH_IS_1970       (1)
+
+// VFS stat functions should return time values relative to 1970/1/1
+#define MICROPY_EPOCH_IS_1970       (1)
 
 extern const struct _mp_print_t mp_stderr_print;
 
@@ -130,20 +149,60 @@ extern const struct _mp_print_t mp_stderr_print;
 #define MICROPY_EMERGENCY_EXCEPTION_BUF_SIZE     (256)
 #define MICROPY_KBD_EXCEPTION       (1)
 
+#define mp_type_fileio mp_type_vfs_posix_fileio
+#define mp_type_textio mp_type_vfs_posix_textio
+
 #define MICROPY_PORT_INIT_FUNC      init()
 #define MICROPY_PORT_DEINIT_FUNC    deinit()
 
+//LVGL binding relative
+#define MICROPY_PY_LVGL             (1)
+#define MICROPY_PY_LVGL_SDL         (1)
+#define MICROPY_PY_LVGL_LODEPNG     (1)
+
+extern const struct _mp_obj_module_t mp_module_machine;
+extern const struct _mp_obj_module_t mp_module_os;
+extern const struct _mp_obj_module_t mp_module_uos_vfs;
+extern const struct _mp_obj_module_t mp_module_lvgl;
+extern const struct _mp_obj_module_t mp_module_lvindev;
+extern const struct _mp_obj_module_t mp_module_SDL;
+extern const struct _mp_obj_module_t mp_module_lodepng;
+
+#if MICROPY_PY_LVGL
+#ifndef MICROPY_INCLUDED_PY_MPSTATE_H
+#define MICROPY_INCLUDED_PY_MPSTATE_H
+#include "lib/lv_bindings/lvgl/src/misc/lv_gc.h"
+#undef MICROPY_INCLUDED_PY_MPSTATE_H
+#else
+#include "lib/lv_bindings/lvgl/src/misc/lv_gc.h"
+#endif
+#define MICROPY_PY_LVGL_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_lvgl), (mp_obj_t)&mp_module_lvgl },
+    #if MICROPY_PY_LVGL_SDL
+    #define MICROPY_PY_LVGL_SDL_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_SDL), (mp_obj_t)&mp_module_SDL },
+    #else
+    #define MICROPY_PY_LVGL_SDL_DEF
+    #endif
+    #if MICROPY_PY_LVGL_LODEPNG
+    #define MICROPY_PY_LVGL_LODEPNG_DEF { MP_OBJ_NEW_QSTR(MP_QSTR_lodepng), (mp_obj_t)&mp_module_lodepng },
+    #else
+    #define MICROPY_PY_LVGL_LODEPNG_DEF
+    #endif
+#else
+    #define LV_ROOTS
+    #define MICROPY_PY_LVGL_DEF
+#endif
+
 // type definitions for the specific machine
 
-#if defined( __MINGW32__ ) && defined( __LP64__ )
+#if defined(__MINGW32__) && defined(__LP64__)
 typedef long mp_int_t; // must be pointer size
 typedef unsigned long mp_uint_t; // must be pointer size
-#elif defined ( __MINGW32__ ) && defined( _WIN64 )
+#elif defined(__MINGW32__) && defined(_WIN64)
 #include <stdint.h>
 typedef __int64 mp_int_t;
 typedef unsigned __int64 mp_uint_t;
 #define MP_SSIZE_MAX __INT64_MAX__
-#elif defined ( _MSC_VER ) && defined( _WIN64 )
+#elif defined(_MSC_VER) && defined(_WIN64)
 typedef __int64 mp_int_t;
 typedef unsigned __int64 mp_uint_t;
 #else
@@ -152,6 +211,8 @@ typedef unsigned __int64 mp_uint_t;
 typedef int mp_int_t; // must be pointer size
 typedef unsigned int mp_uint_t; // must be pointer size
 #endif
+
+typedef long suseconds_t;
 
 // Just assume Windows is little-endian - mingw32 gcc doesn't
 // define standard endianness macros.
@@ -164,27 +225,24 @@ typedef long long mp_off_t;
 typedef long mp_off_t;
 #endif
 
-#if MICROPY_PY_OS_DUPTERM
-#define MP_PLAT_PRINT_STRN(str, len) mp_hal_stdout_tx_strn_cooked(str, len)
-void mp_hal_dupterm_tx_strn(const char *str, size_t len);
-#else
-#include <unistd.h>
-#define MP_PLAT_PRINT_STRN(str, len) do { int ret = write(1, str, len); (void)ret; } while (0)
-#define mp_hal_dupterm_tx_strn(s, l)
-#endif
-
 #define MICROPY_PORT_BUILTINS \
     { MP_ROM_QSTR(MP_QSTR_open), MP_ROM_PTR(&mp_builtin_open_obj) },
 
 extern const struct _mp_obj_module_t mp_module_os;
 extern const struct _mp_obj_module_t mp_module_time;
+
 #define MICROPY_PORT_BUILTIN_MODULES \
     { MP_ROM_QSTR(MP_QSTR_utime), MP_ROM_PTR(&mp_module_time) }, \
     { MP_ROM_QSTR(MP_QSTR_umachine), MP_ROM_PTR(&mp_module_machine) }, \
     { MP_ROM_QSTR(MP_QSTR_uos), MP_ROM_PTR(&mp_module_os) }, \
+    MICROPY_PY_LVGL_DEF \
+    MICROPY_PY_LVGL_SDL_DEF \
+    MICROPY_PY_LVGL_LODEPNG_DEF
 
 #if MICROPY_USE_READLINE == 1
 #define MICROPY_PORT_ROOT_POINTERS \
+    LV_ROOTS \
+    void *mp_lv_user_data; \
     char *readline_hist[50];
 #endif
 
@@ -208,7 +266,7 @@ extern const struct _mp_obj_module_t mp_module_time;
 
 // Sanity check
 
-#if ( _MSC_VER < 1800 )
+#if (_MSC_VER < 1800)
     #error Can only build with Visual Studio 2013 toolset
 #endif
 
@@ -220,13 +278,23 @@ extern const struct _mp_obj_module_t mp_module_time;
 #define MP_NOINLINE                 __declspec(noinline)
 #define MP_LIKELY(x)                (x)
 #define MP_UNLIKELY(x)              (x)
-#define MICROPY_PORT_CONSTANTS      { "dummy", 0 } //can't have zero-sized array
+#define MICROPY_PORT_CONSTANTS      { "dummy", 0 } // can't have zero-sized array
 #ifdef _WIN64
 #define MP_SSIZE_MAX                _I64_MAX
 #else
 #define MP_SSIZE_MAX                _I32_MAX
 #endif
 
+// VC++ 12.0 fixes
+#if (_MSC_VER <= 1800)
+#define MICROPY_PY_MATH_ATAN2_FIX_INFNAN (1)
+#define MICROPY_PY_MATH_FMOD_FIX_INFNAN (1)
+#ifdef _WIN64
+#define MICROPY_PY_MATH_MODF_FIX_NEGZERO (1)
+#else
+#define MICROPY_PY_MATH_POW_FIX_NAN (1)
+#endif
+#endif
 
 // CL specific definitions
 
@@ -240,12 +308,12 @@ extern const struct _mp_obj_module_t mp_module_time;
 #define S_ISDIR(m)                  (((m) & S_IFMT) == S_IFDIR)
 #ifdef _WIN64
 #define SSIZE_MAX                   _I64_MAX
-typedef __int64                     ssize_t;
+typedef __int64 ssize_t;
 #else
 #define SSIZE_MAX                   _I32_MAX
-typedef int                         ssize_t;
+typedef int ssize_t;
 #endif
-typedef mp_off_t                    off_t;
+typedef mp_off_t off_t;
 
 
 // Put static/global variables in sections with a known name
@@ -259,7 +327,7 @@ typedef mp_off_t                    off_t;
 
 // System headers (needed e.g. for nlr.h)
 
-#include <stddef.h> //for NULL
-#include <assert.h> //for assert
+#include <stddef.h> // for NULL
+#include <assert.h> // for assert
 
 #endif

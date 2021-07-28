@@ -9,6 +9,9 @@
 *.dis
 *.exe
 
+lextab.py
+yacctab.py
+
 # Packages
 ############
 
@@ -19,6 +22,17 @@
 # VIM Swap Files
 ######################
 *.swp
+*.swo
+*.swn
+
+# VIM Session Files
+######################
+Session.vim
+
+# CTags files
+######################
+tags
+TAGS
 
 # Build directories
 ######################
@@ -27,8 +41,7 @@ build-*/
 
 # Test failure outputs
 ######################
-tests/*.exp
-tests/*.out
+tests/results/*
 
 # Python cache files
 ######################
@@ -39,7 +52,12 @@ __pycache__/
 ######################
 GNUmakefile
 user.props
+ports/javascript/node_modules
 
 # Generated rst files
 ######################
 genrst/
+
+# MacOS desktop metadata files
+######################
+.DS_Store
