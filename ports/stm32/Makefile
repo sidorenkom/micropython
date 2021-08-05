@@ -438,7 +438,7 @@ endif
 endif
 
 ifeq ($(MCU_SERIES),$(filter $(MCU_SERIES),f0 f4 f7 l0 l4 wb))
-		HAL_SRC_C += $(addprefix $(HAL_DIR)/Src/stm32$(MCU_SERIES)xx_, hal_smartcard.c)
+HAL_SRC_C += $(addprefix $(HAL_DIR)/Src/stm32$(MCU_SERIES)xx_, hal_smartcard.c)
 endif
 
 USBDEV_SRC_C += $(addprefix $(USBDEV_DIR)/,\

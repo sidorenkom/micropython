@@ -73,7 +73,7 @@ extern struct _spi_bdev_t spi_bdev;
 #ifndef MODULE_SDRAM_ENABLED
 #define MODULE_SDRAM_ENABLED 		(1)
 #endif
-// #define MICROPY_PY_THREAD           (1)
+#define MICROPY_PY_THREAD           (1)
 
 // HSE is 8MHz
 #define MICROPY_HW_CLK_PLLM (8)
