@@ -45,7 +45,7 @@
 // overriding defaults in py/mpconfig.h.
 
 // Variant-specific definitions.
-#include "mpconfigvariant.h"
+// __!!!__ #include "mpconfigvariant.h"
 
 // The minimal variant's config covers everything.
 // If we're building the minimal variant, ignore the rest of this file.
