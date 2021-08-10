@@ -210,7 +210,7 @@ STATIC mp_obj_t rp2_pio_make_new(const mp_obj_type_t *type, size_t n_args, size_
     // Get the PIO object.
     int pio_id = mp_obj_get_int(args[0]);
     if (!(0 <= pio_id && pio_id < MP_ARRAY_SIZE(rp2_pio_obj))) {
-        mp_raise_ValueError("invalid PIO");
+        mp_raise_ValueError(MP_ERROR_TEXT("invalid PIO");
     }
     const rp2_pio_obj_t *self = &rp2_pio_obj[pio_id];
 
@@ -259,7 +259,7 @@ STATIC mp_obj_t rp2_pio_remove_program(size_t n_args, const mp_obj_t *args) {
         length = bufinfo.len / 2;
         offset = mp_obj_get_int(prog[PROG_OFFSET_PIO0 + PIO_NUM(self->pio)]);
         if (offset < 0) {
-            mp_raise_ValueError("prog not in instruction memory");
+            mp_raise_ValueError(MP_ERROR_TEXT("prog not in instruction memory");
         }
         // Invalidate the program offset in the program object.
         prog[PROG_OFFSET_PIO0 + PIO_NUM(self->pio)] = MP_OBJ_NEW_SMALL_INT(-1);
@@ -280,7 +280,7 @@ STATIC mp_obj_t rp2_pio_state_machine(size_t n_args, const mp_obj_t *pos_args, m
     // Get and verify the state machine id.
     mp_int_t sm_id = mp_obj_get_int(pos_args[1]);
     if (!(0 <= sm_id && sm_id < 4)) {
-        mp_raise_ValueError("invalide state machine");
+        mp_raise_ValueError(MP_ERROR_TEXT("invalide state machine");
     }
 
     // Return the correct StateMachine object.
@@ -568,7 +568,7 @@ STATIC mp_obj_t rp2_state_machine_make_new(const mp_obj_type_t *type, size_t n_a
     // Get the StateMachine object.
     mp_int_t sm_id = mp_obj_get_int(args[0]);
     if (!(0 <= sm_id && sm_id < MP_ARRAY_SIZE(rp2_state_machine_obj))) {
-        mp_raise_ValueError("invalid StateMachine");
+        mp_raise_ValueError(MP_ERROR_TEXT("invalid StateMachine");
     }
     const rp2_state_machine_obj_t *self = &rp2_state_machine_obj[sm_id];
 
@@ -664,7 +664,7 @@ STATIC mp_obj_t rp2_state_machine_get(size_t n_args, const mp_obj_t *args) {
             *(uint32_t *)dest = value;
             dest += sizeof(uint32_t);
         } else {
-            mp_raise_ValueError("unsupported buffer type");
+            mp_raise_ValueError(MP_ERROR_TEXT("unsupported buffer type");
         }
         if (dest >= dest_top) {
             return args[1];
@@ -702,7 +702,7 @@ STATIC mp_obj_t rp2_state_machine_put(size_t n_args, const mp_obj_t *args) {
             value = *(uint32_t *)src;
             src += sizeof(uint32_t);
         } else {
-            mp_raise_ValueError("unsupported buffer type");
+            mp_raise_ValueError(MP_ERROR_TEXT("unsupported buffer type");
         }
         while (pio_sm_is_tx_fifo_full(self->pio, self->sm)) {
             // This delay must be fast.

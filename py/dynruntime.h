@@ -268,7 +268,7 @@ static inline void mp_obj_get_array_dyn(mp_obj_t o, size_t *len, mp_obj_t **item
         *len = l->len;
         *items = l->items;
     } else {
-        mp_raise_TypeError("expected tuple/list");
+        mp_raise_TypeError(MP_ERROR_TEXT("expected tuple/list");
     }
 }
 
