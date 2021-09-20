@@ -48,12 +48,6 @@ $(LVGL_MPY): $(ALL_LVGL_SRC) $(LVGL_BINDING_DIR)/gen/gen_mpy.py
 	$(Q)mkdir -p $(dir $@)
 	$(Q)$(CPP) $(LV_CFLAGS) -DPYCPARSER -x c -I $(LVGL_BINDING_DIR)/pycparser/utils/fake_libc_include $(INC) $(LVGL_DIR)/lvgl.h > $(LVGL_PP)
 	$(Q)$(PYTHON) $(LVGL_BINDING_DIR)/gen/gen_mpy.py -M lvgl -MP lv -MD $(LVGL_MPY_METADATA) -E $(LVGL_PP) $(LVGL_DIR)/lvgl.h > $@
-	$(Q)sed -i 's/#include "..\/..\/lib\/lv_bindings\/lvgl\/lvgl.h"/#include "..\/..\/lib\/lv_bindings\/lvgl\/lvgl.h"\n<PIXELART_INC>/' $@
-	$(Q)sed -i -E 's/STATIC const mp_rom_map_elem_t img_locals_dict_table/<PIXELART_BODY>\n\n\nSTATIC const mp_rom_map_elem_t img_locals_dict_table/' $@
-	$(Q)sed -i 's/<PIXELART_INC>/#include "pixelart\/px_img.h"/' $@
-	$(Q)sed -i -E 's/<PIXELART_BODY>/$(PIXELART_FILE)/' $@
-	$(Q)sed -i 's/<PIXELART_BODY>/\&/g' $@
-	$(Q)sed -i -E 's/mp_img_type\) },/mp_img_type\) },\n\t{ MP_ROM_QSTR(MP_QSTR_pximg), MP_ROM_PTR(\&mp_pximg_type) },/' $@
 
 .PHONY: LVGL_MPY
 LVGL_MPY: $(LVGL_MPY)
