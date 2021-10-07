@@ -15,7 +15,6 @@ BAUD ?= 460800
 PYTHON ?= python3
 
 GIT_SUBMODULES = lib/berkeley-db-1.xx
-GIT_SUBMODULES += lib/lv_bindings
 
 .PHONY: all clean deploy erase submodules FORCE
 
@@ -34,6 +33,7 @@ endif
 all:
 	idf.py $(IDFPY_FLAGS) build
 	@$(PYTHON) makeimg.py \
+		$(BUILD)/sdkconfig \
 		$(BUILD)/bootloader/bootloader.bin \
 		$(BUILD)/partition_table/partition-table.bin \
     		$(BUILD)/micropython.bin \

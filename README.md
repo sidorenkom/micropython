@@ -2,18 +2,23 @@
 
 [![Build lv_micropython unix port](https://github.com/lvgl/lv_micropython/actions/workflows/unix_port.yml/badge.svg)](https://github.com/lvgl/lv_micropython/actions/workflows/unix_port.yml)
 [![Build lv_micropython stm32 port](https://github.com/lvgl/lv_micropython/actions/workflows/stm32_port.yml/badge.svg)](https://github.com/lvgl/lv_micropython/actions/workflows/stm32_port.yml)
-[![esp32 port](https://github.com/lvgl/lv_micropython/actions/workflows/ports_esp32.yml/badge.svg)](https://github.com/lvgl/lv_micropython/actions/workflows/ports_esp32.yml)
+[![esp32 port](https://github.com/lvgl/lv_micropython/actions/workflows/ports_esp32.yml/badge.svg)](https://github.com/lvgl/lv_micropython/actions/workflows/ports_esp32.yml) [![Build lv_micropython rp2 port](https://github.com/lvgl/lv_micropython/actions/workflows/rp2_port.yml/badge.svg)](https://github.com/lvgl/lv_micropython/actions/workflows/rp2_port.yml)
 
-**For information abound Micropython lvgl bindings please refrer to [lv_binding_micropython/README.md](https://github.com/lvgl/lv_binding_micropython/blob/master/README.md)**
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/lvgl/lv_micropython)  
+With GitPod you can edit, build and run Micropython + LVGL from your web browser!
 
-See also [Micropython + LittlevGL](https://blog.lvgl.io/2019-02-20/micropython-bindings) blog post. (LittlevGL is LVGL's previous name.)
+To quickly run Micropython + LVGL from your web browser you can also use the [Online Simulator](https://sim.lvgl.io/v8.1/micropython/ports/javascript/index.html).
+
+**For information abound Micropython lvgl bindings please refer to [lv_binding_micropython/README.md](https://github.com/lvgl/lv_binding_micropython/blob/master/README.md)**
+
+See also [Micropython + LittlevGL](https://blog.lvgl.io/2019-02-20/micropython-bindings) blog post. (LittlevGL is LVGL's previous name.)  
 For questions and discussions - please use the forum: https://forum.lvgl.io/c/micropython
 
 Original micropython README: https://github.com/micropython/micropython/blob/master/README.md
 
 ## Relationship between `lv_micropython` and `lv_binding_micropython`
 
-Originally, `lv_micropython` was created as an example of how to use [lv_binding_micropython](https://github.com/lvgl/lv_binding_micropython) on a Micropython fork.
+Originally, `lv_micropython` was created as an example of how to use [lv_binding_micropython](https://github.com/lvgl/lv_binding_micropython) on a Micropython fork.  
 As such, we try to keep changes here as minimal as possible and we try to keep it in sync with Micropython upstream releases. We also try to add changes to `lv_binding_micropython` instead of to `lv_micropython`, when possible. (for example we keep all drivers in `lv_binding_micropython`, the ESP32 CMake functionality etc.)
 
 Eventually it turned out that many people prefer using `lv_micropython` directly and only a few use it as a reference to support LVGL on their own Micropython fork.
@@ -21,7 +26,9 @@ If you are only starting with Micropython+LVGL, it's recommended that you use `l
 
 ## Build Instructions
 
-1. `sudo apt-get install build-essential libreadline-dev libffi-dev git pkg-config libsdl2-2.0-0 libsdl2-dev python3.8`
+### Unix (Linux) port
+
+1. `sudo apt-get install build-essential libreadline-dev libffi-dev git pkg-config libsdl2-2.0-0 libsdl2-dev python3.8 parallel`
 Python 3 is required, but you can install some other version of python3 instead of 3.8, if needed.
 2. `git clone --recurse-submodules https://github.com/lvgl/lv_micropython.git`
 3. `cd lv_micropython`
@@ -29,7 +36,7 @@ Python 3 is required, but you can install some other version of python3 instead 
 5. `make -C ports/unix/`
 6. `./ports/unix/micropython`
 
-### For ESP32 port
+### ESP32 port
 
 Please set `ESPIDF` parameter for the esp-idf install dir.
 It needs to match Micropython expected esp-idf, otherwise a warning will be displayed (and build will probably fail)
@@ -52,9 +59,18 @@ Explanation about the paramters:
 
 For more details please refer to [Micropython ESP32 README](https://github.com/micropython/micropython/blob/master/ports/esp32/README.md).
 
-### For JavaScript port
+### JavaScript port
 
 Refer to the README of the `lvgl_javascript` branch: https://github.com/lvgl/lv_micropython/tree/lvgl_javascript#for-javascript-port
+
+### Raspberry Pi Pico port
+
+This port uses [Micropython infrastructure for C modules](https://docs.micropython.org/en/latest/develop/cmodules.html#compiling-the-cmodule-into-micropython) and `USER_C_MODULES` must be given:
+
+```
+cd ports/rp2
+make USER_C_MODULES=../../lv_bindings/bindings.cmake
+```
 
 ## Super Simple Example
 
@@ -142,6 +158,9 @@ lv.scr_load(scr)
 More info about LVGL:
 - Website https://lvgl.io
 - GitHub: https://github.com/lvgl/lvgl
+- Documentation: https://docs.lvgl.io/master/get-started/micropython.html
+- Examples: https://docs.lvgl.io/master/examples.html
+- More examples: https://github.com/lvgl/lv_binding_micropython/tree/master/examples
 
 More info about lvgl Micropython bindings:
 - https://github.com/lvgl/lv_binding_micropython/blob/master/README.md
