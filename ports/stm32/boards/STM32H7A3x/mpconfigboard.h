@@ -67,6 +67,9 @@ extern struct _spi_bdev_t spi_bdev;
 #ifndef MODULE_QRCODE_ENABLED
 #define MODULE_QRCODE_ENABLED       (1)
 #endif
+#ifndef MODULE_QRDECODER_ENABLED
+#define MODULE_QRDECODER_ENABLED    (1)
+#endif
 #ifndef MODULE_SCARD_ENABLED
 #define MODULE_SCARD_ENABLED        (1)
 #endif
