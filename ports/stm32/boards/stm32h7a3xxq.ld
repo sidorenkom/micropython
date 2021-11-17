@@ -1,5 +1,5 @@
 /*
-    GNU linker script for STM32H7A3x (2Mbyte)
+    GNU linker script for STM32H7A3xxQ (2Mbyte)
 */
 
 /* Specify the memory areas */

@@ -1,5 +1,5 @@
 /*
-    GNU linker script for STM32H7A3x (2Mbyte) with dual Bootloader
+    GNU linker script for STM32H7A3xxQ (2Mbyte) with dual Bootloader
 */
 
 /* Specify the memory areas */

@@ -1,12 +1,9 @@
 // This board is configured to communicate over USB port, not ST-Link
-#define MICROPY_BOARD_EARLY_INIT    STM32F469DISC_board_early_init
-void STM32F469DISC_board_early_init(void);
+#define MICROPY_BOARD_EARLY_INIT    STM32H7A3x_board_early_init
+void STM32H7A3x_board_early_init(void);
 
-// TODO: Software SPI not needed anymore, remove after testing
-//#define MICROPY_F469DISC_USE_SOFTSPI // Temporary, enables software 1-bit SPI
-
-#define MICROPY_HW_BOARD_NAME       "F469DISC"
-#define MICROPY_HW_MCU_NAME         "STM32F469"
+#define MICROPY_HW_BOARD_NAME       "SpecterDevKitV2"
+#define MICROPY_HW_MCU_NAME         "STM32H7A3xxQ"
 
 #define MICROPY_HW_ENABLE_INTERNAL_FLASH_STORAGE (1)
 #define MICROPY_HW_HAS_SWITCH       (1)
@@ -20,15 +17,6 @@ void STM32F469DISC_board_early_init(void);
 // use external SPI flash for storage
 #define MICROPY_HW_SPIFLASH_SIZE_BITS (128 * 1024 * 1024)
 
-#ifdef MICROPY_F469DISC_USE_SOFTSPI
-
-#define MICROPY_HW_SPIFLASH_CS      (pin_B6)
-#define MICROPY_HW_SPIFLASH_SCK     (pin_F10)
-#define MICROPY_HW_SPIFLASH_MOSI    (pin_F8)
-#define MICROPY_HW_SPIFLASH_MISO    (pin_F9)
-
-#else // MICROPY_F469DISC_USE_SOFTSPI
-
 #define MICROPY_HW_QSPI_PRESCALER           (3)
 #define MICROPY_HW_QSPIFLASH_SIZE_BITS_LOG2 (27)
 #define MICROPY_HW_QSPIFLASH_CS     (pyb_pin_QSPI_CS)
@@ -37,8 +25,6 @@ void STM32F469DISC_board_early_init(void);
 #define MICROPY_HW_QSPIFLASH_IO1    (pyb_pin_QSPI_D1)
 #define MICROPY_HW_QSPIFLASH_IO2    (pyb_pin_QSPI_D2)
 #define MICROPY_HW_QSPIFLASH_IO3    (pyb_pin_QSPI_D3)
-
-#endif // MICROPY_F469DISC_USE_SOFTSPI
 
 // block device config for SPI flash
 extern const struct _mp_spiflash_config_t spiflash_config;
@@ -78,11 +64,12 @@ extern struct _spi_bdev_t spi_bdev;
 #endif
 #define MICROPY_PY_THREAD           (1)
 
-// HSE is 8MHz
-#define MICROPY_HW_CLK_PLLM (8)
-#define MICROPY_HW_CLK_PLLN (336)
-#define MICROPY_HW_CLK_PLLP (RCC_PLLP_DIV2)
-#define MICROPY_HW_CLK_PLLQ (7)
+// HSE is 24MHz
+#define MICROPY_HW_CLK_PLLM (2)
+#define MICROPY_HW_CLK_PLLN (12)
+#define MICROPY_HW_CLK_PLLP (2)
+#define MICROPY_HW_CLK_PLLQ (3)
+#define MICROPY_HW_CLK_PLLR (2)
 
 #define MICROPY_HW_FLASH_LATENCY    FLASH_LATENCY_6
 
@@ -141,4 +128,3 @@ extern struct _spi_bdev_t spi_bdev;
 #define MICROPY_HW_USB_FS (1)
 #define MICROPY_HW_USB_VBUS_DETECT_PIN (pin_A9)
 #define MICROPY_HW_USB_OTG_ID_PIN      (pin_A10)
-
