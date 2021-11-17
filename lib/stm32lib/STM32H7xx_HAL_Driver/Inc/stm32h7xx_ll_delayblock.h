@@ -15,7 +15,7 @@
   *                        opensource.org/licenses/BSD-3-Clause
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef STM32H7xx_LL_DLYB_H
@@ -34,18 +34,18 @@
 
 /** @addtogroup DELAYBLOCK_LL
   * @{
-  */
+  */ 
 
-/* Exported types ------------------------------------------------------------*/
+/* Exported types ------------------------------------------------------------*/ 
 /** @defgroup DELAYBLOCK_LL_Exported_Types DELAYBLOCK_LL Exported Types
   * @{
   */
-
+  
 
 /**
   * @}
   */
-
+  
 /* Exported constants --------------------------------------------------------*/
 /** @defgroup DLYB_Exported_Constants Delay Block Exported Constants
   * @{
@@ -53,23 +53,25 @@
 
 
 #define DLYB_MAX_UNIT   ((uint32_t)0x00000080U) /*!< Max UNIT value (128)  */
+#define DLYB_MAX_SELECT ((uint32_t)0x0000000CU) /*!< Max SELECT value (12)  */
 
 /**
   * @}
-  */
-
+  */ 
+ 
 /* Peripheral Control functions  ************************************************/
 /** @addtogroup HAL_DELAYBLOCK_LL_Group3 Delay Block functions
   * @{
   */
 HAL_StatusTypeDef DelayBlock_Enable(DLYB_TypeDef *DLYBx);
 HAL_StatusTypeDef DelayBlock_Disable(DLYB_TypeDef *DLYBx);
+HAL_StatusTypeDef DelayBlock_Configure(DLYB_TypeDef *DLYBx, uint32_t PhaseSel, uint32_t Units);
 
 /**
   * @}
   */
-
-
+  
+  
 /**
   * @}
   */
