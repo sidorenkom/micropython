@@ -1,6 +1,6 @@
 // This board is configured to communicate over USB port, not ST-Link
-#define MICROPY_BOARD_EARLY_INIT    STM32H7A3x_board_early_init
-void STM32H7A3x_board_early_init(void);
+#define MICROPY_BOARD_EARLY_INIT    STM32H7A3xxQ_board_early_init
+void STM32H7A3xxQ_board_early_init(void);
 
 #define MICROPY_HW_BOARD_NAME       "SpecterDevKitV2"
 #define MICROPY_HW_MCU_NAME         "STM32H7A3xxQ"
